@@ -172,6 +172,7 @@ def save_checkpoint(save_dir, model, best_model, weight_optimizer, alpha_optimiz
         'indices': index,
         'best_net': best_model,
         'best_epoch': best_epoch,
+        'best_model': best_model,
         'loss_progress': loss_progress,
         'accuracy_progress': accuracy_progress,
         'alpha_progress': alpha_progress,
