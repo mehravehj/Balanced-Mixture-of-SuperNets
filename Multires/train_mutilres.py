@@ -121,13 +121,11 @@ def main():
 
             if test_accuracy > best_accuracy:
                 print('-----------> Best accuracy')
-                print()
                 best_model = net.state_dict()
                 best_accuracy = test_accuracy
                 best_epoch = epoch
                 best_alpha = get_alpha(args.net_type, net)
 
-            print('epoch ', epoch)
             print('train accuracy: ', train_accuracy, ' ....... validation accuracy: ', validation_accuracy, ' ....... test accuracy: ', test_accuracy)
             print('best accuracy:', best_accuracy,' at epoch ', best_epoch)
 
