@@ -67,7 +67,7 @@ def main():
     net.cuda()
     print(net)
 
-    print("param size = %fMB", count_parameters_in_MB(net))
+    print("param size = %fMB" %(count_parameters_in_MB(net)))
 
     criterion = nn.CrossEntropyLoss()
     criterion = criterion.cuda()
@@ -102,6 +102,7 @@ def main():
 
     for epoch in range(epoch+1, args.epochs+1):
         print('epoch ', epoch)
+        print('net learning rate: ', weight_optimizer.param_groups[0]['lr'])
         train_loss, validation_loss, train_accuracy, validation_accuracy = train_function(train_loader, validation_loader, net, weight_optimizer, alpha_optimizer, criterion, epoch)
         scheduler.step()
 
@@ -186,6 +187,7 @@ def save_checkpoint(save_dir, model, best_model, weight_optimizer, alpha_optimiz
     if not os.path.isdir('checkpoint'):
         os.mkdir('checkpoint')
     torch.save(state, save_dir)
+
 
 def calculate_accuracy(logits, target, cul_total=0, cul_prediction=0):
     _, test_predicted = logits.max(1)
