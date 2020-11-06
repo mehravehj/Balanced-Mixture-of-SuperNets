@@ -1,17 +1,17 @@
 from __future__ import print_function
+
+import argparse
+import os
 from datetime import datetime
+from os import path
+
 import numpy as np
 import torch
-import os
-from os import path
-import argparse
-import torch.nn as nn
 import torch.backends.cudnn as cudnn
-import torch.nn.functional as F
+import torch.nn as nn
 import torch.optim as optim
-from model import multires_model
 from data_loader import data_loader
-
+from model import multires_model
 
 parser = argparse.ArgumentParser(description='PyTorch Mutiresolution Training')
 parser.add_argument('--dataset', '-d', default='CIFAR10', type=str, help='dataset name')
@@ -79,7 +79,7 @@ def main():
 
 
     save_dir = './checkpoint/ckpt_' + str(args.test_name) + '.t7'
-    epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index = load_checkpoint(save_dir, net, weight_optimizer, alpha_optimizer)
+    best_model, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index = load_checkpoint(save_dir, net, weight_optimizer, alpha_optimizer)
 
     if path.exists(args.data_dir):
         dataset_dir = args.data_dir
@@ -100,44 +100,47 @@ def main():
     else:
         train_function = train_valid
 
-    for epoch in range(epoch, args.epochs):
-        print(epoch)
+    for epoch in range(epoch+1, args.epochs+1):
+        print('epoch ', epoch)
         train_loss, validation_loss, train_accuracy, validation_accuracy = train_function(train_loader, validation_loader, net, weight_optimizer, alpha_optimizer, criterion, epoch)
         scheduler.step()
 
-    if epoch % 5 == 0 or epoch == args.epochs-1:
-        test_loss, test_accuracy = test(test_loader, net)
-        print('epoch ', epoch)
-        print('train accuracy: ', train_accuracy, ' ....... validation accuracy: ', validation_accuracy, ' ....... test accuracy: ', test_accuracy)
-        print('best accuracy:', best_accuracy,' at epoch ', best_epoch)
+        if epoch % 5 == 0 or epoch == 1:
+            print('Testing...')
+            test_loss, test_accuracy = test(test_loader, net)
 
-        loss_progress['train'].append(train_loss)
-        loss_progress['validation'].append(validation_loss)
-        loss_progress['test'].append(test_loss)
+            loss_progress['train'].append(train_loss)
+            loss_progress['validation'].append(validation_loss)
+            loss_progress['test'].append(test_loss)
 
-        accuracy_progress['train'].append(train_accuracy)
-        accuracy_progress['validation'].append(validation_accuracy)
-        accuracy_progress['test'].append(test_accuracy)
+            accuracy_progress['train'].append(train_accuracy)
+            accuracy_progress['validation'].append(validation_accuracy)
+            accuracy_progress['test'].append(test_accuracy)
 
-        alpha_progress.append(get_alpha(args.net_type, net))
+            alpha_progress.append(get_alpha(args.net_type, net))
 
-        if test_accuracy > best_accuracy:
-            print('-----------> Best accuracy')
-            print()
-            best_model = net.state_dict()
-            best_accuracy = test_accuracy
-            best_epoch = epoch
-            best_alpha = get_alpha(args.net_type, net)
+            if test_accuracy > best_accuracy:
+                print('-----------> Best accuracy')
+                print()
+                best_model = net.state_dict()
+                best_accuracy = test_accuracy
+                best_epoch = epoch
+                best_alpha = get_alpha(args.net_type, net)
 
-        print('.....SAVING.....')
-        save_checkpoint(save_dir, net, best_model, weight_optimizer, alpha_optimizer, epoch, loss_progress,
-                        accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index)
+            print('epoch ', epoch)
+            print('train accuracy: ', train_accuracy, ' ....... validation accuracy: ', validation_accuracy, ' ....... test accuracy: ', test_accuracy)
+            print('best accuracy:', best_accuracy,' at epoch ', best_epoch)
+
+            print('.....SAVING.....')
+            save_checkpoint(save_dir, net, best_model, weight_optimizer, alpha_optimizer, epoch, loss_progress,
+                            accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index)
 
 
 def load_checkpoint(save_dir, model, weight_optimizer, alpha_optimizer):
     epoch = 0
     index = 0
     best_epoch = 0
+    best_model = 0
     best_accuracy = 0
     loss_progress = {'train': [], 'validation': [], 'test': []}
     accuracy_progress = {'train': [], 'validation': [], 'test': []}
@@ -151,6 +154,7 @@ def load_checkpoint(save_dir, model, weight_optimizer, alpha_optimizer):
         loss_progress = checkpoint['loss_progress']
         accuracy_progress = checkpoint['loss_progress']
         alpha_progress = checkpoint['alpha_progress']
+        best_model = checkpoint['best_model']
         best_alpha = checkpoint['best_alpha']
         best_epoch = checkpoint['best_epoch']
         best_accuracy = checkpoint['best_accuracy']
@@ -160,7 +164,7 @@ def load_checkpoint(save_dir, model, weight_optimizer, alpha_optimizer):
         weight_optimizer.load_state_dict(checkpoint['weight_optimizer'])
         alpha_optimizer.load_state_dict(checkpoint['alpha_optimizer'])
 
-    return epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index
+    return best_model, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index
 
 
 def save_checkpoint(save_dir, model, best_model, weight_optimizer, alpha_optimizer, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index):
@@ -184,34 +188,6 @@ def save_checkpoint(save_dir, model, best_model, weight_optimizer, alpha_optimiz
         os.mkdir('checkpoint')
     torch.save(state, save_dir)
 
-
-
-    epoch = 0
-    index = 0
-    best_epoch = 0
-    best_accuracy = 0
-    loss_progress = {'train': [], 'validation': [], 'test':[]}
-    accuracy_progress = {'train': [], 'validation': [], 'test':[]}
-    alpha_progress = get_alpha(args.net_type, model)
-
-    if path.exists(save_dir):
-        print('Loading from checkpoint...')
-        checkpoint = torch.load(save_dir)
-        epoch = checkpoint['epoch']
-        loss_progress = checkpoint['loss_progress']
-        accuracy_progress = checkpoint['loss_progress']
-        alpha_progress = checkpoint['alpha_progress']
-        best_epoch = checkpoint['best_epoch']
-        best_accuracy = checkpoint['best_accuracy']
-        index = checkpoint['indices']
-
-        model.load_state_dict(checkpoint['model'])
-        weight_optimizer.load_state_dict(checkpoint['weight_optimizer'])
-        alpha_optimizer.load_state_dict(checkpoint['alpha_optimizer'])
-
-    return epoch, loss_progress, accuracy_progress, alpha_progress, best_epoch, best_accuracy, index
-
-
 def calculate_accuracy(logits, target, cul_total=0, cul_prediction=0):
     _, test_predicted = logits.max(1)
     test_total = target.size(0)
@@ -230,8 +206,10 @@ def get_alpha(net_type, model):
         alpha = (torch.stack(alpha, 0)).numpy()
     return alpha
 
+
 def count_parameters_in_MB(model):
   return np.sum(np.prod(v.size()) for name, v in model.named_parameters())/1e6
+
 
 def parameters(model):
     all_parameter_names = [x for x, y in model.named_parameters()]
@@ -242,6 +220,7 @@ def parameters(model):
     alpha_parameters = [all_parameters[idx] for idx in alpha_param_idx]
 
     return weight_parameters, alpha_parameters
+
 
 def train_valid(train_queue, validation_queue, model, weight_optimizer, alpha_optimizer, criterion=nn.CrossEntropyLoss(), epoch=0):
     model.train()
@@ -307,6 +286,7 @@ def train(train_queue, validation_queue, model, weight_optimizer, alpha_optimize
 
         return train_loss, validation_loss, 0, 0
 
+
 def test(test_queue, model, criterion=nn.CrossEntropyLoss()):
     model.eval()
     test_loss = 0
@@ -322,69 +302,10 @@ def test(test_queue, model, criterion=nn.CrossEntropyLoss()):
     return test_loss, test_correct/test_total
 
 
-
-
-
-
 startTime = datetime.now()
 
 x = torch.rand(128,3,32,32)
 x = torch.Tensor(x)
-# y = net(x)
-# print(y.size())
-#
-# alpha = define_alpha(4,0)
-# print(alpha)
 
-
-# model = multi_res('sconv',3, 5, 3, max_scales=4)
-# print(model)
-#
-#
-# for name, param in model.named_parameters():
-#     if param.requires_grad:
-#         print(name, param.size())
-#
-# y = model(x)
-# print(y.size())
-
-# net = multires_model(ncat=10, net_type='multires', mscale='sconv', channels='8,16,32,64,128', leng=6, max_scales=2, factor=1, initial_alpha='0', pool='1,1,2,2,4,4')
-# net = net.cuda()
-# for name, param in net.named_parameters():
-#     if param.requires_grad:
-#         print(name, param.size())
-#
-# weight_parameters, alpha_parameters = parameters(net)
-# weight_optimizer = optim.SGD(weight_parameters, lr=0.1, momentum=0.01)#, weight_decay=args.wd)
-# alpha_optimizer = optim.Adam(alpha_parameters, lr=0.1, betas=(0.9, 0.999))#, weight_decay=args.awd)
-#
-# print(alpha_parameters)
-# # print(net)
-# #
-# # out = net(x)
-# #
-# #
-# # alpha = get_alpha(net.net_type)
-# #
-# # print(alpha)
-# # y = model(x)
-# # print(y.size())
-#
-# # l = '1,1,1,2,2,3,3,5'
-# # k = string_to_list(l)
-# # m = normal_pooling(k)
-# # print(m)
-#
-# #
-# # if net.net_typt != 'normal':
-# #     alphas = []
-# #     for l in net.modules()
-#
-#
-# train_loader, validation_loader, test_loader, indices, num_class = data_loader('CIFAR10', 0.2, 32, num_train=1000, indices=0, dataset_dir='~/Desktop/codes/multires/data/', workers=4)
-# train_loss, validation_loss, train_accuracy, validation_accuracy = train_valid(train_loader, validation_loader, net, weight_optimizer, alpha_optimizer)
-#
-#
-# print(datetime.now() - startTime)
 if __name__ == '__main__':
   main()
