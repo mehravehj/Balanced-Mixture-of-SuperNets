@@ -1,15 +1,9 @@
 from __future__ import print_function
-import numpy as np
+
 import torch
 import torch.nn as nn
-import os
-import argparse
-import torch.optim as optim
 import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
-from data_loader import data_loader
-from datetime import datetime
-import random
+
 
 def downsample(x, num_res):
     multi_scale_input = [x]
@@ -73,6 +67,7 @@ class ResBlock_same_filters(nn.Module):
         self.bn1 = nn.ModuleList([nn.BatchNorm2d(out_, affine=False) for _ in range(self.max_scales)])
         self.conv2 = nn.Conv2d(out_, out_, kernel_size, stride=1, padding=1)
         self.bn2 = nn.ModuleList([nn.BatchNorm2d(out_, affine=False) for _ in range(self.max_scales)])
+        # self.bn = nn.ModuleList([nn.BatchNorm2d(out_, affine=False) for _ in range(self.max_scales)])  # batchnorm not in default resnet block
         if in_ != out_:
             self.conv3 = nn.Conv2d(in_, out_, kernel_size=1, stride=1, padding=0, bias=False)
             self.bn3 = nn.ModuleList([nn.BatchNorm2d(out_, affine=False) for _ in range(self.max_scales)])
@@ -93,6 +88,7 @@ class ResBlock_same_filters(nn.Module):
             else:
                 resid = lx[r]
             y += resid
+            # y = self.bn[r](y)# batchnorm not in default resnet block
             ly.append(self.interp(y, scale_factor=2 ** r, mode='nearest'))
         out = (torch.stack(ly, 0))
         return out

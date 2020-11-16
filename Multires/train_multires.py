@@ -74,12 +74,19 @@ def main():
 
     weight_parameters, alpha_parameters = parameters(net)
     weight_optimizer = optim.SGD(weight_parameters, lr=args.learning_rate, momentum=args.weight_momentum, weight_decay=args.weight_decay)
-    alpha_optimizer = optim.Adam(alpha_parameters, lr=args.alr, betas=(0.9, 0.999), weight_decay=args.awd)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(weight_optimizer, float(args.epochs), eta_min=args.min_learning_rate)
 
+    if args.net_type == 'normal':
+        train_function = train
+        validation_loader = 0
+        alpha_optimizer = 0
+
+    else:
+        train_function = train_valid
+        alpha_optimizer = optim.Adam(alpha_parameters, lr=args.alr, betas=(0.9, 0.999), weight_decay=args.awd)
 
     save_dir = './checkpoint/ckpt_' + str(args.test_name) + '.t7'
-    best_model, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index = load_checkpoint(save_dir, net, weight_optimizer, alpha_optimizer)
+    best_model, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index = load_checkpoint(save_dir, net, weight_optimizer, scheduler, alpha_optimizer)
 
     if path.exists(args.data_dir):
         dataset_dir = args.data_dir
@@ -92,13 +99,7 @@ def main():
                                                                                    dataset_dir=dataset_dir,
                                                                                    workers=args.workers)
 
-    if args.net_type == 'normal':
-        train_function = train
-        validation_loader = 0
-        validation_loader = 0
 
-    else:
-        train_function = train_valid
 
     for epoch in range(epoch+1, args.epochs+1):
         print('epoch ', epoch)
@@ -131,11 +132,17 @@ def main():
             print('best accuracy:', best_accuracy,' at epoch ', best_epoch)
 
             print('.....SAVING.....')
-            save_checkpoint(save_dir, net, best_model, weight_optimizer, alpha_optimizer, epoch, loss_progress,
+            if args.net_type == 'normal':
+                alpha_optimizer_state = 0
+
+            else:
+                alpha_optimizer_state = alpha_optimizer.state_dict()
+
+            save_checkpoint(save_dir, net, best_model, weight_optimizer, scheduler, alpha_optimizer_state, epoch, loss_progress,
                             accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index)
 
 
-def load_checkpoint(save_dir, model, weight_optimizer, alpha_optimizer):
+def load_checkpoint(save_dir, model, weight_optimizer, scheduler, alpha_optimizer):
     epoch = 0
     index = 0
     best_epoch = 0
@@ -151,7 +158,7 @@ def load_checkpoint(save_dir, model, weight_optimizer, alpha_optimizer):
         checkpoint = torch.load(save_dir)
         epoch = checkpoint['epoch']
         loss_progress = checkpoint['loss_progress']
-        accuracy_progress = checkpoint['loss_progress']
+        accuracy_progress = checkpoint['accuracy_progress']
         alpha_progress = checkpoint['alpha_progress']
         best_model = checkpoint['best_model']
         best_alpha = checkpoint['best_alpha']
@@ -161,12 +168,14 @@ def load_checkpoint(save_dir, model, weight_optimizer, alpha_optimizer):
 
         model.load_state_dict(checkpoint['model'])
         weight_optimizer.load_state_dict(checkpoint['weight_optimizer'])
-        alpha_optimizer.load_state_dict(checkpoint['alpha_optimizer'])
+        scheduler.load_state_dict(checkpoint['scheduler_state'])
+        if args.net_type == 'multires':
+            alpha_optimizer.load_state_dict(checkpoint['alpha_optimizer'])
 
     return best_model, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index
 
 
-def save_checkpoint(save_dir, model, best_model, weight_optimizer, alpha_optimizer, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index):
+def save_checkpoint(save_dir, model, best_model, weight_optimizer, scheduler, alpha_optimizer_state, epoch, loss_progress, accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index):
     state = {
         'test_properties': vars(args),
         'seed': args.seed,
@@ -182,7 +191,8 @@ def save_checkpoint(save_dir, model, best_model, weight_optimizer, alpha_optimiz
         'model': model.state_dict(),
         'epoch': epoch,
         'weight_optimizer': weight_optimizer.state_dict(),
-        'alpha_optimizer': alpha_optimizer.state_dict(),
+        'alpha_optimizer': alpha_optimizer_state,
+        'scheduler_state': scheduler.state_dict(),
     }
     if not os.path.isdir('checkpoint'):
         os.mkdir('checkpoint')
@@ -231,6 +241,7 @@ def train_valid(train_queue, validation_queue, model, weight_optimizer, alpha_op
     validation_correct = 0
     train_total = 0
     validation_total = 0
+    validation_accuracy = 0
     validation_iterator = iter(validation_queue)
     for batch_idx, (train_inputs, train_targets) in enumerate(train_queue):
         train_inputs, train_targets = train_inputs.cuda(), train_targets.cuda()
@@ -262,8 +273,9 @@ def train_valid(train_queue, validation_queue, model, weight_optimizer, alpha_op
 
             validation_loss += validation_minibatch_loss.cpu().item()
             validation_correct, validation_total = calculate_accuracy(validation_outputs, validation_targets, validation_total, validation_correct)
+            validation_accuracy = validation_correct/validation_total
 
-        return train_loss, validation_loss, train_correct/train_total, validation_correct/validation_total
+    return train_loss, validation_loss, train_correct/train_total, validation_accuracy
 
 
 def train(train_queue, validation_queue, model, weight_optimizer, alpha_optimizer, criterion=nn.CrossEntropyLoss(), epoch=0):
@@ -285,7 +297,7 @@ def train(train_queue, validation_queue, model, weight_optimizer, alpha_optimize
         train_loss += train_minibatch_loss.cpu().item()
         train_correct, train_total = calculate_accuracy(train_outputs, train_targets, train_total, train_correct)
 
-        return train_loss, validation_loss, 0, 0
+    return train_loss, 0, train_correct/train_total, 0
 
 
 def test(test_queue, model, criterion=nn.CrossEntropyLoss()):

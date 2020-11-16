@@ -1,9 +1,8 @@
 from __future__ import print_function
-import numpy as np
-import torch
+
 import torch.nn as nn
 import torch.nn.functional as F
-from alpha_blocks import multi_res, normal_net, network_layer
+from alpha_blocks import network_layer
 
 
 def string_to_list(x):
@@ -48,7 +47,7 @@ class multires_model(nn.Module):
 
         list_layer += [network_layer(net_type, mscale, self.channels[-1], ncat, 3, self.max_scales,
                                      self.initial_alpha[-1], factor, self.pool[-1])]
-
+        # self.bn = nn.BatchNorm2d(ncat, affine=False)
         self.layer = nn.ModuleList(list_layer)
 
     def forward(self, x):
@@ -57,6 +56,7 @@ class multires_model(nn.Module):
             out = self.layer[l](out)
             # print('layer ', l)
             # print(out.size())
+        # out = self.bn(out)
         out = F.avg_pool2d(out, kernel_size=out.size()[2:])
         out = out.view(out.size(0), -1)
         return out
