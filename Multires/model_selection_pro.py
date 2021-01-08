@@ -46,7 +46,7 @@ class multires_model(nn.Module):
         # print(self.initial_alpha)
         # print(self.channels)
 
-        list_layer = [network_layer(net_type='normal', mscale, 3, self.channels[0], 3, self.max_scales,
+        list_layer = [network_layer('normal', mscale, 3, self.channels[0], 3, self.max_scales,
                                     self.initial_alpha[0], factor, self.pool[0])]
 
         list_layer += [network_layer(net_type, mscale, self.channels[i-1], self.channels[i], 3, self.max_scales,
