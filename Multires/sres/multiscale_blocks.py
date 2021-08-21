@@ -18,19 +18,6 @@ def downsample(x, num_res): # eliminate append
         multi_scale_input.append(xx)
     return multi_scale_input
 
-def define_alpha(max_scales, ini_alpha=0, factor=1):
-    '''
-    define parameter alpha either as uniform ones or supplied initilization
-    :param max_scales:
-    :param ini_alpha:
-    :param factor:
-    :return:
-    '''
-    if ini_alpha:
-        alpha = torch.eye(max_scales)[ini_alpha-1] * factor
-    else:
-        alpha = torch.ones(max_scales) * factor
-    return alpha
 
 class conv_block_same_filter(nn.Module):
     def __init__(self, in_, out_, kernel_size, max_scales=4):
@@ -42,7 +29,7 @@ class conv_block_same_filter(nn.Module):
         # separate BN for each resolution
         # self.bn = nn.ModuleList([nn.BatchNorm2d(out_, affine=False)
         #                          for _ in range(self.max_scales)])
-        self.bn = nn.BatchNorm2d(out_, affine=False)
+        self.bn = nn.ModuleList([nn.BatchNorm2d(out_, affine=False) for _ in range(self.max_scales)])
 
     def forward(self, x): # eliminate append
         lx = downsample(x, self.max_scales)
@@ -52,23 +39,9 @@ class conv_block_same_filter(nn.Module):
             y = self.relu(y)
             # separate BN for each resolution
             # y = self.bn[r](y)
-            y = self.bn(y)
+            y = self.bn[r](y)
             ly.append(self.interp(y, scale_factor=2 ** r, mode='nearest'))
         out = (torch.stack(ly, 0))
-        return out
-
-
-class conv_block_normal(nn.Module):
-    def __init__(self, in_, out_, kernel_size):
-        super(conv_block_normal, self).__init__()
-        self.conv = nn.Conv2d(in_, out_, kernel_size, stride=1, padding=1)
-        self.relu = nn.ReLU()
-        self.bn = nn.BatchNorm2d(out_, affine=False)
-
-    def forward(self, x):
-        y = self.conv(x)
-        y = self.relu(y)
-        out = self.bn(y)
         return out
 
 
@@ -92,7 +65,7 @@ class ResBlock_same_filters(nn.Module):
         ########################## xtfsaxtstax
         if in_ != out_:
             self.conv3 = nn.Conv2d(in_, out_, kernel_size=1, stride=1, padding=0, bias=False)
-            self.bn3 = nn.BatchNorm2d(out_, affine=False)
+            self.bn3 = nn.ModuleList([nn.BatchNorm2d(out_, affine=False) for _ in range(self.max_scales)])
 
     def forward(self, x): # eliminate append
         lx = downsample(x, self.max_scales)
@@ -106,7 +79,7 @@ class ResBlock_same_filters(nn.Module):
 
             if self.in_ != self.out_:
                 resid = self.conv3(lx[r])
-                resid = self.bn3(resid)
+                resid = self.bn3[r](resid)
             else:
                 resid = lx[r]
             y += resid
@@ -116,36 +89,4 @@ class ResBlock_same_filters(nn.Module):
             ly.append(self.interp(y, scale_factor=2 ** r, mode='nearest'))
         out = (torch.stack(ly, 0))
         # print(out.size())
-        return out
-
-
-class ResBlock_normal(nn.Module):
-    def __init__(self, in_, out_, kernel_size):
-        super(ResBlock_normal, self).__init__()
-        self.in_ = in_
-        self.out_ = out_
-
-        self.conv1 = nn.Conv2d(in_, out_, kernel_size, stride=1, padding=1, bias=False)
-        self.relu = nn.ReLU()
-        self.bn1 = nn.BatchNorm2d(out_, affine=False)
-        self.conv2 = nn.Conv2d(out_, out_, kernel_size, stride=1, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(out_, affine=False)
-        if in_ != out_:
-            self.conv3 = nn.Conv2d(in_, out_, kernel_size=1, stride=1, padding=0, bias=False)
-            self.bn3 = nn.BatchNorm2d(out_, affine=False)
-
-    def forward(self, x):
-        y = self.conv1(x)
-        y = self.bn1(y)
-        y = self.relu(y)
-        y = self.conv2(y)
-        y = self.bn2(y)
-
-        if self.in_ != self.out_:
-            resid = self.conv3(x)
-            resid = self.bn3(resid)
-        else:
-            resid = x
-        y += resid
-        out = self.relu(y)
         return out

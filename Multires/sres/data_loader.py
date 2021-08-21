@@ -36,11 +36,11 @@ def _data_transforms_cifar10():
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        # transforms.Normalize(cifar_mean, cifar_std),
+        transforms.Normalize(cifar_mean, cifar_std),
     ])
     test_transform = transforms.Compose([
         transforms.ToTensor(),
-        # transforms.Normalize(cifar_mean, cifar_std),
+        transforms.Normalize(cifar_mean, cifar_std),
     ])
     return train_transform, test_transform
 
@@ -83,6 +83,7 @@ def _data_transforms_tinyimagenet():
 
 def validation_set_indices(num_train, valid_percent, dataset_name):
     train_size = num_train - int(valid_percent * num_train)  # number of training examples
+    print('training size:', train_size)
     val_size = num_train - train_size  # number of validation examples
     if dataset_name =='TIN':
         image_per_class = 500
@@ -97,12 +98,12 @@ def validation_set_indices(num_train, valid_percent, dataset_name):
             shuffle(val_index)
             shuffle(train_index)
     else:
-        indices = list(range(num_train))  # available indices at training set
-        shuffle(indices)
-        indices = indices[:num_train]
+        indexes = list(range(num_train))  # available indices at training set
+        shuffle(indexes)
+        indexes = indexes[:num_train]
         split = train_size
-        train_index = indices[:split]
-        val_index = indices[split:]
+        train_index = indexes[:split]
+        val_index = indexes[split:]
         # print('do they have common element?')
         # print(bool(set(train_index) & set(val_index)))
         # print(any(i in train_index for i in val_index))

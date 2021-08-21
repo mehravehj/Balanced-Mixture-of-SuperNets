@@ -2,10 +2,10 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from multiscale_blocks import *
+from multiscale_blocks_BN import *
 
 
-def pooling(x, pool):
+def pooling(x,pool):
     if pool > 0:
         for p in range(pool):
             x = (F.max_pool2d(x, kernel_size=2))
@@ -22,7 +22,6 @@ class multi_res(nn.Module):
             self.block = conv_block_same_filter(channels_in, channels_out, kernel_size, max_scales)
         elif block_type == 'sres':
             self.block = ResBlock_same_filters(channels_in, channels_out, kernel_size, max_scales)
-
         # self.gamma = 1
         # a = [(i+1)**self.gamma for i in range(max_scales)]
         # self.sia_multiplier = torch.FloatTensor(a).view(-1, 1, 1, 1, 1).cuda()

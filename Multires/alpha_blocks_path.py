@@ -2,15 +2,13 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from multiscale_blocks import *
+from multiscale_blocks_path import *
 
 
-def pooling(x, pool):
-    if pool > 0:
+def pooling(x,pool):
+    if pool:
         for p in range(pool):
             x = (F.max_pool2d(x, kernel_size=2))
-    elif pool < 0:
-        x = F.interpolate(x, scale_factor=2 ** abs(pool), mode='nearest')
     return x
 
 class multi_res(nn.Module):
@@ -22,17 +20,20 @@ class multi_res(nn.Module):
             self.block = conv_block_same_filter(channels_in, channels_out, kernel_size, max_scales)
         elif block_type == 'sres':
             self.block = ResBlock_same_filters(channels_in, channels_out, kernel_size, max_scales)
-
-        # self.gamma = 1
-        # a = [(i+1)**self.gamma for i in range(max_scales)]
-        # self.sia_multiplier = torch.FloatTensor(a).view(-1, 1, 1, 1, 1).cuda()
+        self.max_scales = max_scales
+        self.initial_alpha = initial_alpha
 
     def forward(self, x):
-        # abs_alpha = torch.abs(self.alpha)
-        nalpha = F.softmax(self.alpha * self.factor, 0).view(-1, 1, 1, 1, 1)
+        # y = self.block(x)
+        # nalpha = F.softmax(self.alpha * self.factor, 0).view(-1, 1, 1, 1, 1)
         y = self.block(x)
         # out = (y * nalpha * self.sia_multiplier).sum(0)
-        out = (y * nalpha).sum(0)
+        # y = y * nalpha
+        # print(self.initial_alpha)
+        y = y[self.initial_alpha, ...]
+        out = y
+        # print(nalpha[self.initial_alpha])
+        # out = y * nalpha[self.initial_alpha]
         return out
 
 class normal_net(nn.Module): # pooling is perfomed on the input of layer

@@ -11,7 +11,7 @@ import torch.backends.cudnn as cudnn
 import torch.nn as nn
 import torch.optim as optim
 from data_loader import data_loader
-from model import multires_model
+from model_skip import multires_model
 
 parser = argparse.ArgumentParser(description='PyTorch Mutiresolution Training')
 parser.add_argument('--dataset', '-d', default='CIFAR10', type=str, help='dataset name')
@@ -48,12 +48,15 @@ parser.add_argument('--data_dir', '-dd', type=str, default='./data/', help='data
 
 parser.add_argument('--workers', '-wr', type=int, default=0, help='number of workers to load data')
 
+#### scale invariant
+parser.add_argument('--gamma', '-gm', default=1, type=float, help='scale invariant gamma')
 # parser.add_argument('--scheduler', '-sc', default=False, action='store_true', help='resume from checkpoint')
 
 args = parser.parse_args()
 
 
 def main():
+    startTime = datetime.now()
     np.random.seed(args.seed)
     cudnn.benchmark = True
     torch.manual_seed(args.seed)
@@ -63,9 +66,15 @@ def main():
     print('Test ', args.test_name)
     print(args)
 
-    net = multires_model(ncat=10, net_type=args.net_type, mscale=args.mscale, channels=args.channels, leng=args.leng, max_scales=args.max_scales, factor=args.factor, initial_alpha=args.initial_alpha, pool=args.pooling)
+    net = multires_model(ncat=200, net_type=args.net_type, mscale=args.mscale, channels=args.channels, leng=args.leng, max_scales=args.max_scales, factor=args.factor, initial_alpha=args.initial_alpha, pool=args.pooling)
     net.cuda()
+    net = nn.DataParallel(net)
     print(net)
+    #scale invariant
+    # for i in range(net.module.leng):
+    #     net.module.layer[i].block.gamma = args.gamma
+    #     a = [(i + 1) ** args.gamma for i in range(args.max_scales)]
+    #     net.module.layer[i].block.sia_multiplier = torch.FloatTensor(a).view(-1, 1, 1, 1, 1).cuda()
 
     print("param size = %fMB" %(count_parameters_in_MB(net)))
 
@@ -74,8 +83,9 @@ def main():
 
     weight_parameters, alpha_parameters = parameters(net)
     weight_optimizer = optim.SGD(weight_parameters, lr=args.learning_rate, momentum=args.weight_momentum, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(weight_optimizer, float(args.epochs), eta_min=args.min_learning_rate)
-
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(weight_optimizer, float(args.epochs), eta_min=args.min_learning_rate)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(weight_optimizer, T_0=50, T_mult=2,
+                                                                     eta_min=args.min_learning_rate)
     if args.net_type == 'normal':
         train_function = train
         validation_loader = 0
@@ -99,7 +109,7 @@ def main():
                                                                                    dataset_dir=dataset_dir,
                                                                                    workers=args.workers)
 
-
+    # print(train_loader)
 
     for epoch in range(epoch+1, args.epochs+1):
         print('epoch ', epoch)
@@ -140,6 +150,7 @@ def main():
 
             save_checkpoint(save_dir, net, best_model, weight_optimizer, scheduler, alpha_optimizer_state, epoch, loss_progress,
                             accuracy_progress, alpha_progress, best_alpha, best_epoch, best_accuracy, index)
+        print('Training time: ', datetime.now() - startTime)
 
 
 def load_checkpoint(save_dir, model, weight_optimizer, scheduler, alpha_optimizer):
@@ -168,7 +179,10 @@ def load_checkpoint(save_dir, model, weight_optimizer, scheduler, alpha_optimize
 
         model.load_state_dict(checkpoint['model'])
         weight_optimizer.load_state_dict(checkpoint['weight_optimizer'])
-        scheduler.load_state_dict(checkpoint['scheduler_state'])
+        try:
+            scheduler.load_state_dict(checkpoint['scheduler_state'])
+        except:
+            pass
         if args.net_type == 'multires':
             alpha_optimizer.load_state_dict(checkpoint['alpha_optimizer'])
 
@@ -179,6 +193,7 @@ def save_checkpoint(save_dir, model, best_model, weight_optimizer, scheduler, al
     state = {
         'test_properties': vars(args),
         'seed': args.seed,
+        'factor' : args.factor,
         'indices': index,
         'best_net': best_model,
         'best_epoch': best_epoch,
@@ -214,12 +229,15 @@ def get_alpha(net_type, model):
         for name, param in model.named_parameters():
             if param.requires_grad and 'alpha' in name:
                 alpha.append(param.cpu().detach())
+                print(param.size())
+        alpha[0] = torch.cat((alpha[0], torch.tensor([-10000000], dtype=alpha[0].dtype)))
+        alpha[-1] = torch.cat((alpha[-1], torch.tensor([-1000000], dtype=alpha[-1].dtype)))
         alpha = (torch.stack(alpha, 0)).numpy()
     return alpha
 
 
 def count_parameters_in_MB(model):
-  return np.sum(np.prod(v.size()) for name, v in model.named_parameters())/1e6
+    return np.sum(np.prod(v.size()) for name, v in model.named_parameters())/1e6
 
 
 def parameters(model):
@@ -248,7 +266,8 @@ def train_valid(train_queue, validation_queue, model, weight_optimizer, alpha_op
         weight_optimizer.zero_grad()
         train_outputs = model(train_inputs)
         train_minibatch_loss = criterion(train_outputs, train_targets)
-        train_minibatch_loss.backward(retain_graph=True)  # TODO: activate for MiLeNAS
+        # train_minibatch_loss.backward(retain_graph=True)  # TODO: activate for MiLeNAS
+        train_minibatch_loss.backward()  # TODO: activate for MiLeNAS
         weight_optimizer.step()
 
         train_loss += train_minibatch_loss.cpu().item()
@@ -267,7 +286,7 @@ def train_valid(train_queue, validation_queue, model, weight_optimizer, alpha_op
             alpha_optimizer.zero_grad()
             validation_outputs = model(validation_inputs)
             validation_minibatch_loss = criterion(validation_outputs, validation_targets)
-            validation_minibatch_loss += train_minibatch_loss
+            # validation_minibatch_loss += train_minibatch_loss
             validation_minibatch_loss.backward()  # TODO: activate for MiLeNAS
             alpha_optimizer.step()
 
@@ -287,6 +306,7 @@ def train(train_queue, validation_queue, model, weight_optimizer, alpha_optimize
     train_total = 0
     validation_total = 0
     for batch_idx, (train_inputs, train_targets) in enumerate(train_queue):
+        # print(batch_idx)
         train_inputs, train_targets = train_inputs.cuda(), train_targets.cuda()
         weight_optimizer.zero_grad()
         train_outputs = model(train_inputs)
@@ -296,7 +316,7 @@ def train(train_queue, validation_queue, model, weight_optimizer, alpha_optimize
 
         train_loss += train_minibatch_loss.cpu().item()
         train_correct, train_total = calculate_accuracy(train_outputs, train_targets, train_total, train_correct)
-
+    # print('done')
     return train_loss, 0, train_correct/train_total, 0
 
 
@@ -315,10 +335,8 @@ def test(test_queue, model, criterion=nn.CrossEntropyLoss()):
     return test_loss, test_correct/test_total
 
 
-startTime = datetime.now()
 
-x = torch.rand(128,3,32,32)
-x = torch.Tensor(x)
+
 
 if __name__ == '__main__':
   main()
