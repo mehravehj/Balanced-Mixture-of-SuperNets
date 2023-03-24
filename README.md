@@ -7,14 +7,11 @@ In this repository we release PyTorch code to replicate all main results, images
 It's recommended to use Python3 and create a virtual environment first
 To run the the experiments install the following packages:
 
-'''
-./install.sh
-'''
+```bash
+$ ./install.sh
+```
 
-For ResNet18 and ResNet50 experiments, datasets need to be converted to FFCV format. To download and convert them for CIFAR100 run:
-
-'''
-'''
+For ResNet18 and ResNet50 experiments, datasets need to be converted to FFCV format. To download and convert them for CIFAR100 run.
 
 
 
