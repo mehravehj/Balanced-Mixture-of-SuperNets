@@ -9,6 +9,6 @@
 #SBATCH --job-name b4 
 #SBATCH --output=output_base__%j.txt 
 
-python write_dataset_50.py
+python write_dataset.py
 
 
