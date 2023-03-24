@@ -9,7 +9,6 @@ import copy
 from utils.lr_scheduler import CosineAnnealingWarmupRestarts
 
 
-
 def create_models(layers, channels, num_models):
   """
   create n identical models
