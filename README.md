@@ -1,9 +1,9 @@
-# Balanced-Mixture-of-Supernets-for-Learning-CNN-Pooling
+# Balanced Mixture of Supernets for Learning CNN Pooling
 
-This repository contains the of release PyTorch code to replicate all main results, figures and tabels presented in the paper: Balanced Mixture of Supernets for Learning the CNN Pooling Architecture
+This repository contains the release of PyTorch code to replicate all main results, figures and tabels presented in the paper: Balanced Mixture of Supernets for Learning the CNN Pooling Architecture
 
-The repository structure is as followed:
-  * `figures/`contains all figures represented in paper 
+The repository structure is as follows:
+  * `figures/`, contains all figures represented in the paper 
   * `cifar/`, contains code for CIFAR10/CIFAR50 experiments on Resnet18/Resnet50 backbone architectures
   * `resnet20/`, contains code for CIFAR10 experiments on Resnet20 backbone architecture 
   * `food101/`, contains code for food101 experiments on Resnet50 backbone architecture 
@@ -11,8 +11,8 @@ The repository structure is as followed:
 
 ## Getting Started
 ### Install
-It's recommended to use Python3 and create a virtual environment first
-To run the the experiments install the following packages:
+It's recommended to use Python3 and create a virtual environment first. 
+To run the the experiments, install the following packages:
 
 ```bash
 $ ./install.sh
