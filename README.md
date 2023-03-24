@@ -6,6 +6,7 @@ The repository structure is as followed:
   * `figures/`contains all figures represented in paper 
   * `cifar/`, contains code for CIFAR10/CIFAR50 experiments on Resnet18/Resnet50 backbone architectures
   * `resnet20/`, contains code for CIFAR10 experiments on Resnet20 backbone architecture 
+  * `food101/`, contains code for food101 experiments on Resnet50 backbone architecture 
   
 
 ## Getting Started
