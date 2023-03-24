@@ -15,7 +15,6 @@ def create_models(layers, channels, num_models):
   create n identical models
   """
   models = [ResNet20(ResBasicBlock, layers, channels) for _ in range(num_models)] # create multiple models
-  #model2 = copy.deepcopy(model1) # do I make them same initialization?
   return models
 
 
