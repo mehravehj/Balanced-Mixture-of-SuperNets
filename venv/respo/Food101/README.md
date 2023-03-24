@@ -20,4 +20,7 @@ This will create two folders `train_50/` and `val_50/` that can be converted to 
 This direcory contains:
 *  Satnd-alone or individaul training: run following command with the path number as an argument:
 ``` python train_original_baseline.py -pn 360 ``` 
-* Mixture of models (our method): run the following with nm argument for different number of models. ```python train_initial_mm.sh -nm 4``` 
+* Balanced Mixture Method (our method): run the following with nm argument for different number of models. ```python train_initial_mm.sh -nm 4``` 
+
+Balanced Mixture Method will output architecture number and their evaluation accuarcy. To study the structure of each architecture, consult ``` rn50_lookup_space.csv  ```
+
