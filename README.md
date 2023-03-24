@@ -4,12 +4,9 @@ This repository contains the of release PyTorch code to replicate all main resul
 
 The repository structure is as followed:
   * `figures/`contains all figures represented in paper 
-  * `results/`contains raw results of our tests
-  * `CIFAR`,
-
-
-## Structure of Respository
-
+  * `cifar/`, contains code for CIFAR10/CIFAR50 experiments on Resnet18/Resnet50 backbone architectures
+  * `resnet20/`, contains code for CIFAR10 experiments on Resnet20 backbone architecture 
+  
 
 ## Getting Started
 ### Install
@@ -20,7 +17,25 @@ To run the the experiments install the following packages:
 $ ./install.sh
 ```
 
-For ResNet18 and ResNet50 experiments, datasets need to be converted to FFCV format. To download and convert them for CIFAR100 run.
+### Dataset Preperation
+For ResNet18 and ResNet50 experiments, datasets need to be converted to FFCV format. For each experiments (Assuming in respective dirctory such as `cifar/resnet18/), to download and convert them for CIFAR100 run 
+
+```bash
+$ ./write_cifar.sh
+```
+
+For NAS methods presented in this paper, dataset are split 50/50, to split CIFAR datsets before conversion, run:
+
+```bash
+$ ./write_cifar_50.sh
+```
+
+
+
+
+
+
+
 
 
 
