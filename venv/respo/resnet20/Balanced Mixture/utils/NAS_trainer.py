@@ -43,32 +43,19 @@ def initialize_prob_matrix(num_paths, num_models, init_paths_w = 1, init_models_
 def train_valid(models, train_queue, optimizers, sample_weights, paths, weight_mat, temperature, validation_queue, decay, counter_matrix, threshold,
                 criterion=nn.CrossEntropyLoss()):
     p_m = []
-    # print(weight_mat.size())
     prob = torch.nn.functional.softmax(weight_mat * temperature, dim=1)  # conditional prob p(model|arch)
     marginal = torch.sum(prob, 0).view(1,-1) /prob.size(0) #sum / 36 size is (1,2)
-    # print(marginal.size())
     num_models = len(models)
     #define uniform probability
     marginal_uniform = torch.nn.functional.softmax(torch.ones(1,num_models), dim=1)
-    # print(marginal_uniform.size())
-    # calculate KL divergence
-    # print(marginal)
-    # print(marginal_uniform)
     kl_dis = abs((marginal * (marginal / marginal_uniform).log()).sum())
-    print(kl_dis)
     while kl_dis > threshold:
-        # print('calculated marginal', marginal)
         p_m.append(marginal)
         weighted_p = prob/marginal #Calculate
-        # print(weighted_p)
         # normalize conditional probs over models
         prob = weighted_p / torch.sum(weighted_p, 1).view(weighted_p.size(0),1)
-        # print(prob.size())
         marginal = torch.sum(prob, 0).view(1,-1) /prob.size(0) # marginal
-        #update KL distance
         kl_dis = abs((marginal * (marginal / marginal_uniform).log()).sum())
-        # print(kl_dis)
-        # print(marginal)
 
     # initializing average per epoch metrics
     train_loss = 0 #average train loss
@@ -79,7 +66,6 @@ def train_valid(models, train_queue, optimizers, sample_weights, paths, weight_m
     validation_iterator = iter(validation_queue)  # validation set iterator
 
     for batch_idx, (train_inputs, train_targets) in enumerate(train_queue):
-        #print(batch_idx)
         train_acc = 0
         valid_acc = 0
         # sample paths
@@ -116,20 +102,9 @@ def train_valid(models, train_queue, optimizers, sample_weights, paths, weight_m
         # update weight matrix
         valid_acc = copy.deepcopy(calculate_accuracy(validation_outputs, validation_targets))
         valid_acc_batch = copy.deepcopy(valid_acc[0] / valid_acc[1])
-        # print('-------------------')
-        # print(path_index, model_index)
-        # print(valid_acc_batch)
-        # print(weight_mat)
         weight_mat[path_index, model_index] = exp_moving_avg(weight_mat[path_index, model_index], valid_acc_batch, decay)
-        # print(weight_mat)
         validation_loss += validation_minibatch_loss.detach().cpu().item()
         validation_accuracy += valid_acc
-
-        # #sanity checks
-        # print('selected path:', path_index, path)
-        # print('selected model:', model_index)
-        # print('counter:', counter_matrix)
-        # print('weight_mat:', weight_mat)
 
     return counter_matrix, weight_mat, prob_cond, prob, train_loss, validation_loss, train_accuracy, validation_accuracy
 
@@ -154,41 +129,13 @@ def validate_all(models, num_models, paths, num_paths, validation_queue):
                 valid_accuracy = copy.deepcopy(valid_acc)
                 valid_accuracy_batch += valid_accuracy
                 per_class += accuracy_per_class(validation_outputs, validation_targets)
-                # print(per_class.size())
             valid_acc_epoch = valid_accuracy_batch[0] / valid_accuracy_batch[1]
             valid_acc_epoch_per_class = per_class[0,:] / per_class[1,:]
             init_acc_mat[j,i] = copy.deepcopy(valid_acc_epoch)
             init_acc_mat_per_class[j,i,:] = copy.deepcopy(valid_acc_epoch_per_class)
     return init_acc_mat, init_acc_mat_per_class
 
-# def validate_ensemble(models, num_models, paths, num_paths, prob_cond, validation_queue):
-#     print('evaluating images accross models and paths....')
-#     init_acc_mat = torch.zeros((num_paths, num_models)) # initialize matrix for accuracy
-#     init_acc_mat_per_class = torch.zeros((num_paths, num_models, 10)) # initialize matrix for accuracy
-#     for i in range(num_models):
-#         model = models[i]
-#         model.eval()
-#         for j in range(num_paths):
-#             valid_accuracy_batch = 0
-#             valid_accuracy_epoch = 0
-#             per_class = 0
-#             model.set_path(paths[j])
-#
-#             for batch_idx, (validation_inputs, validation_targets) in enumerate(validation_queue):
-#                 validation_inputs, validation_targets = validation_inputs.cuda(), validation_targets.cuda()
-#                 validation_outputs = model(validation_inputs)
-#                 valid_acc = calculate_accuracy(validation_outputs, validation_targets)
-#                 valid_accuracy = copy.deepcopy(valid_acc)
-#                 valid_accuracy_batch += valid_accuracy
-#                 per_class += accuracy_per_class(validation_outputs, validation_targets)
-#                 # print(per_class.size())
-#             valid_acc_epoch = valid_accuracy_batch[0] / valid_accuracy_batch[1]
-#             valid_acc_epoch_per_class = per_class[0,:] / per_class[1,:]
-#             init_acc_mat[j,i] = copy.deepcopy(valid_acc_epoch)
-#             init_acc_mat_per_class[j,i,:] = copy.deepcopy(valid_acc_epoch_per_class)
-#     return init_acc_mat, init_acc_mat_per_class
-
-
+  
 def accuracy_per_class(logits, target):
     correct_class = torch.zeros(10)
     total_class = torch.zeros(10)
@@ -197,7 +144,6 @@ def accuracy_per_class(logits, target):
         total_class[c] = target.eq(c).sum().item()
         correct_class[c] = (test_predicted.eq(target) * target.eq(c)).sum()
     return torch.vstack((correct_class, total_class))
-
 
 
 def calculate_accuracy(logits, target):
