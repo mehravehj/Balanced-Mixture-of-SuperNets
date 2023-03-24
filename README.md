@@ -19,13 +19,13 @@ $ ./install.sh
 ```
 
 ### Dataset Preperation
-For ResNet18 and ResNet50 experiments, datasets need to be converted to [FFCV](https://ffcv.io/) format. For each experiments (Assuming in respective dirctory such as `cifar/resnet18/), to download and convert them for CIFAR100 run 
+For ResNet18 and ResNet50 experiments, datasets need to be converted to [FFCV](https://ffcv.io/) format. For each experiments (assuming in respective dirctory such as `cifar/resnet18/), to download and convert them for CIFAR100 run 
 
 ```bash
 $ ./write_cifar.sh
 ```
 
-For NAS methods presented in this paper, dataset are split 50/50, to split CIFAR datsets before conversion, run:
+For NAS methods presented in this paper, dataset are split 50/50. To split CIFAR datsets before conversion, run:
 
 ```bash
 $ ./write_cifar_50.sh
