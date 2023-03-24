@@ -19,7 +19,7 @@ $ ./install.sh
 ```
 
 ### Dataset Preperation
-For ResNet18 and ResNet50 experiments, datasets need to be converted to FFCV format. For each experiments (Assuming in respective dirctory such as `cifar/resnet18/), to download and convert them for CIFAR100 run 
+For ResNet18 and ResNet50 experiments, datasets need to be converted to [FFCV](https://ffcv.io/) format. For each experiments (Assuming in respective dirctory such as `cifar/resnet18/), to download and convert them for CIFAR100 run 
 
 ```bash
 $ ./write_cifar.sh
