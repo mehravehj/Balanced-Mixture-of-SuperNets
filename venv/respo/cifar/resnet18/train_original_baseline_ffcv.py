@@ -12,7 +12,6 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.optim
-# from torch.optim.lr_scheduler import StepLR
 import torch.multiprocessing as mp
 import torch.utils.data
 import torch.utils.data.distributed
@@ -25,14 +24,6 @@ from ffcv.fields.rgb_image import CenterCropRGBImageDecoder, RandomResizedCropRG
 from ffcv.fields.basics import IntDecoder
 
 from torchvision import datasets,transforms
-
-# from ffcv.loader import Loader, OrderOption
-# from ffcv.transforms import ToTensor, ToDevice, Squeeze, NormalizeImage, RandomHorizontalFlip, ToTorchImage
-# from ffcv.fields.rgb_image import CenterCropRGBImageDecoder, RandomResizedCropRGBImageDecoder
-# from ffcv.fields.basics import IntDecoder
-
-
-# from create_model_baseline import ResNet, BasicBlock, Bottleneck, create_search_space
 from create_model_baseline_ffcv import ResNet18, create_search_space
 
 model_names = sorted(name for name in models.__dict__
@@ -107,10 +98,6 @@ def main_worker(gpu, args):
 
 
     n_class = 10
-        # mean = [0.485, 0.456, 0.406]
-        # std = [0.229, 0.224, 0.225]
-
-    # create model
     # create model
     model = ResNet18()
 
@@ -125,18 +112,11 @@ def main_worker(gpu, args):
 
     # define loss function (criterion), optimizer, and learning rate scheduler
     criterion = nn.CrossEntropyLoss().cuda()
-    # linear scale learning rate with 256 base batch size
-    #args.lr *= args.batch_size * args.ngpus / 256
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate,
                                 momentum=args.weight_momentum,
                                 weight_decay=args.weight_decay)
     
-    # various schedulers
-
-    # decay lr by 10 every 30 epochs
-    #scheduler = StepLR(optimizer, step_size=30, gamma=0.1)
-
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, args.epochs + 1, eta_min=args.min_learning_rate)
+    # scheduler
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[200,300], gamma=0.1, last_epoch=- 1, verbose=True)
 
 
