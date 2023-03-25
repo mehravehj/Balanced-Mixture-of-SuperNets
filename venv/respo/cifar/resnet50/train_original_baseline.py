@@ -143,9 +143,6 @@ def main_worker(gpu, args):
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
 
-    # IMAGENET_MEAN = np.array([0.485, 0.456, 0.406]) * 255
-    # IMAGENET_STD = np.array([0.229, 0.224, 0.225]) * 255
-
     IMAGENET_MEAN = np.array([0.4842, 0.4901, 0.4505]) * 255
     IMAGENET_STD = np.array([0.2180, 0.2021, 0.1958]) * 255
 
