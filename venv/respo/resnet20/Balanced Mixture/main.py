@@ -46,8 +46,6 @@ parser.add_argument('--init_logit', '-ilog', default=1.0, type=float, help='init
 
 
 parser.add_argument('--threshold', '-thr', default=0.0001, type=float, help='how many times to normalize prob')
-# parser.add_argument('--local_rank', '-lrank', type=int, default=0)
-# parser.add_argument('-ngpu', type=int, default=4)
 
 args = parser.parse_args()
 
@@ -118,7 +116,6 @@ def main():
     ### intialize paths
     paths, num_paths = create_search_space(args.leng, max_scales)
     path_w, weight_mat = intialize_prob_matrix(num_paths, num_models, init_paths_w = 1, init_models_w = 1) # create initial probabilities
-    # counter_matrix = torch.FloatTensor([[0 for i in range(num_models)] for j in range(num_paths)])
 
     counter_matrix = torch.zeros((num_paths, num_models), dtype=int)
     c_matrix = []
