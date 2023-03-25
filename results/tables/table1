@@ -1,0 +1,41 @@
+\begin{table}[!]
+\label{relxing-weights}
+\caption{CIFAR10 results for different search methods, number of model weights and paths. %In this experiments, weights are not shared among resolutions in each layer. For Single Path one-shot(SPOS) we test both the restricted search space (36 paths) and unrestricted (19,683 paths). For DARTS, search space is the latter.
+For DARTS we consider a model with shared weights for different feature map resolutions \emph{Fully Shared} and not shared with different weights per resolution and different initialization. In all cases accuracy is lower than the \emph{Default}. For SPOS, we test \emph{Fully Shared} weights and not shared with different weights per resolution and different number of paths. Results are comparable to the default setting. Only our \emph{Balanded Mixtures} of SuperNets clearly outperforms default.
+}
+\footnotesize
+\vspace{-0.4cm}
+\begin{center}
+\begin{tabular}{ l c c c c c}
+
+ NAS Method & Mixtures(M) & Paths &  Architecture & Accuracy \\ %& Tr. Time \\ 
+ \hline   
+ \hline
+  %DARTS\citep{liu2018darts}- different filters  & - & -  & - \\  
+ %\hline
+ %\hline
+  %GDAS \citep{dong2019searching} & - & -  & -  \\
+\quad \emph{Default} & 1 & 1 & [4,3,3] & $90.52 \pm 0.1$ \\
+    \hline
+    DARTS \\
+    %DARTS\citep{liu2018darts}  & [2,1,3][1,0,2][1] & 89.23  \\%& \~3 \\  
+  \quad \emph{Fully shared} & 1 & 19,638 & Fig.~\ref{DARTS-same} & $89.23 \pm 0.13$  \\%& \~3 \\  
+%  \quad Fully shared + GAEA & - & - \\% & ~3  \\ 
+%& \~3 \\  
+  \quad \emph{Not shared - same init.} & 4 & 19,638 & Fig.~\ref{DARTS-Diff} & $89.85 \pm 0.18$  \\%& \~3 \\  
+  \quad \emph{Not shared - rnd. init.} & 4 & 19,638 & Fig.~\ref{DARTS-Diff} & $90.03 \pm 0.21$  \\
+ \hline
+ SPOS \\
+\quad \emph{Fully shared} & 1 & 36 & [3,3,4] & $90.61 \pm 0.17$ \\
+\quad \emph{Not shared}  & 4 & 36 & [4,2,4] & $90.34 \pm 0.12$ \\
+ %\hline
+\quad \emph{Not shared} & 4 & 19,683 & [4,2,4] & $90.34 \pm 0.12 $ \\
+ 
+  %\hline
+ \quad \emph{Balanced Mixtures (Ours)} & 4 & 36 & [5,3,2] & $\bf{91.55} \pm 0.08$
+\end{tabular}
+
+\end{center}
+\label{cifar-methods-diff}
+\vspace{-0.7cm}
+\end{table}
