@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 from fastargs import get_current_config
-from torchvision.datasets import CIFAR100
+from torchvision.datasets import CIFAR10
 
 from ffcv.writer import DatasetWriter
 from ffcv.fields import IntField, RGBImageField
