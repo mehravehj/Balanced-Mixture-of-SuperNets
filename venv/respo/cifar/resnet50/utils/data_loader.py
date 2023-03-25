@@ -1,13 +1,3 @@
-# from random import shuffle
-#
-# import torch
-# import torch.utils.data
-# import torchvision
-# import torchvision.transforms as transforms
-# from torch.utils.data import Dataset
-# from torch.utils.data.sampler import SubsetRandomSampler
-# import torch.utils.data
-# import torch.utils.data.distributed
 import numpy as np
 
 from ffcv.loader import Loader, OrderOption
@@ -19,8 +9,6 @@ from ffcv.fields.basics import IntDecoder
 def data_loader(gpu, fp32, datset_dir, train_file, val_file, batch_size, workers):
     seed_np = int(np.random.randint(low=0, high=9999, size=None, dtype=int))
     print('randomseed is:', seed_np)
-    # IMAGENET_MEAN = np.array([0.485, 0.456, 0.406]) * 255
-    # IMAGENET_STD = np.array([0.229, 0.224, 0.225]) * 255
     train_file = datset_dir + '/' + train_file
     val_file = datset_dir + '/' + val_file
     IMAGENET_MEAN = np.array([0.4842, 0.4901, 0.4505]) * 255
