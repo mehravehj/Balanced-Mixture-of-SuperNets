@@ -9,13 +9,13 @@ import torch
 
 
 def main():
-    train_dataset = 'cifar100_train_50.beton'
-    val_dataset = 'cifar100_val_50.beton'
+    train_dataset = 'cifar10_train_50.beton'
+    val_dataset = 'cifar10_val_50.beton'
 
 
-    trainset = CIFAR100('.', train=True, download=True)
+    trainset = CIFAR10('.', train=True, download=True)
 
-    nclass = 100
+    nclass = 10
 
     indices_list = []
     for i in range(nclass):
