@@ -117,7 +117,6 @@ class ResNet20(nn.Module):
     out = self.avgpool(out)
     out = out.view(out.size(0), -1)
     out = self.fc(out)
-#         out = out.view(out.size(0), -1)
     return out
       
       
