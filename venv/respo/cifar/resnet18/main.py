@@ -7,12 +7,8 @@ from os import path
 import torch
 import torch.nn as nn
 import torch.utils.data
-
-
 import numpy as np
-
 import torch.backends.cudnn as cudnn
-
 import random
 import torch.distributed as dist
 import torch.multiprocessing as mp
@@ -104,7 +100,7 @@ def main_worker(gpu, args):
     gamma = args.gamma
     threshold = args.threshold
 
-    save_dir = './checkpoint/food_mm_chpt_' + str(args.test_name) + '.t7'  # checkpoint save directory
+    save_dir = './checkpoint/chpt_' + str(args.test_name) + '.t7'  # checkpoint save directory
 
     #linear temperature
     temp = [((max_temp-temperature)/epochs * i + temperature) for i in range(epochs+1)]
@@ -125,10 +121,6 @@ def main_worker(gpu, args):
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids=[args.gpu])
         nets.append(net)
 
-
-    # nets = create_models(num_models)
-    # for net in nets:
-    #     net.cuda()
     print('-------------------')
     print(nets[0])
     optimizers, schedulers = create_optimizers(sched_type, nets, num_models, lr, moment, w_decay, epochs, mlr, first_cycle_steps, cycle_mult, warmup_steps, gamma)
@@ -139,18 +131,6 @@ def main_worker(gpu, args):
     current_epoch = 0
 
     ###loading data
-    # if path.exists(args.data_dir):
-    #     dataset_dir = args.data_dir
-    # else:
-    #     dataset_dir = '~/Desktop/codes/multires/data/'
-
-    # index = 0
-    # train_loader, validation_loader, test_loader, indices, num_class = data_loader(args.dataset, args.validation_percent,
-    #                                                                                args.batchsize,
-    #                                                                                indices=index,
-    #                                                                                dataset_dir=dataset_dir,
-    #
-    #                                                                                workers=args.workers)
     dataset_dir = args.data_dir
     train_file = 'cifar100_train_50.beton'
     val_file = 'cifar100_val_50.beton'
@@ -159,7 +139,6 @@ def main_worker(gpu, args):
     ### intialize paths
     paths, num_paths = create_search_space()
     path_w, weight_mat = intialize_prob_matrix(num_paths, num_models, init_paths_w = 1, init_models_w = 1) # create initial probabilities
-    # counter_matrix = torch.FloatTensor([[0 for i in range(num_models)] for j in range(num_paths)])
 
     counter_matrix = torch.zeros((num_paths, num_models), dtype=int)
     c_matrix = []
@@ -179,12 +158,9 @@ def main_worker(gpu, args):
         print('epoch ', epoch)
         print('net learning rate: ', optimizers[0].param_groups[0]['lr'])
         print('model weights')
-        #print(nets[0].module.layer1[0].conv2.weight[0,0,:,:])
         # train
         counter_matrix, weight_mat, prob_mat, p_marg, train_loss, validation_loss, t_accuracy, v_accuracy = train_valid(nets, train_loader, optimizers, path_w, paths, weight_mat,
                   temp[epoch], validation_loader, decay, counter_matrix, threshold, scaler, fp32, criterion=nn.CrossEntropyLoss())
-        #print(c_Matrix)
-        #print(weight_mat)
         c_matrix.append(copy.deepcopy(counter_matrix))
         w_matrix.append(copy.deepcopy(weight_mat))
         p_matrix.append(copy.deepcopy(prob_mat))
