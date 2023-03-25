@@ -7,7 +7,7 @@ This dataset consists of 101 food categories, with total of 101,000 images with 
 To convert image folder dataset to FFCV format run:
 
 ```bash
-$ create_dataset1.py
+$ create_dataset.py
 ```
 
 For our NAS method, split training set to 50/50 subsets per class before conversion by running: 
