@@ -126,10 +126,6 @@ def main_worker(gpu, args):
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids=[args.gpu])
         nets.append(net)
 
-
-    # nets = create_models(num_models)
-    # for net in nets:
-    #     net.cuda()
     print('-------------------')
     print(nets[0])
     optimizers, schedulers = create_optimizers(sched_type, nets, num_models, lr, moment, w_decay, epochs, mlr, first_cycle_steps, cycle_mult, warmup_steps, gamma)
@@ -140,18 +136,6 @@ def main_worker(gpu, args):
     current_epoch = 0
 
     ###loading data
-    # if path.exists(args.data_dir):
-    #     dataset_dir = args.data_dir
-    # else:
-    #     dataset_dir = '~/Desktop/codes/multires/data/'
-
-    # index = 0
-    # train_loader, validation_loader, test_loader, indices, num_class = data_loader(args.dataset, args.validation_percent,
-    #                                                                                args.batchsize,
-    #                                                                                indices=index,
-    #                                                                                dataset_dir=dataset_dir,
-    #
-    #                                                                                workers=args.workers)
     dataset_dir = args.data_dir
     train_file = 'train_50_256_1.0_90.ffcv'
     val_file = 'val_50_256_1.0_90.ffcv'
@@ -179,8 +163,6 @@ def main_worker(gpu, args):
     for epoch in range(current_epoch, args.epochs + 1):
         print('epoch ', epoch, flush=True)
         print('net learning rate: ', optimizers[0].param_groups[0]['lr'])
-        #print('model weights')
-        #print(nets[0].module.layer1[0].conv2.weight[0,0,:,:])
         # train
         counter_matrix, weight_mat, prob_mat, p_marg, train_loss, validation_loss, t_accuracy, v_accuracy = train_valid(nets, train_loader, optimizers, path_w, paths, weight_mat,
                   temp[epoch], validation_loader, decay, counter_matrix, threshold, scaler, fp32, criterion=nn.CrossEntropyLoss())
@@ -207,7 +189,6 @@ def main_worker(gpu, args):
                 init_acc_mat, init_acc_mat_per_class = validate_all(nets, num_models, paths, num_paths, validation_loader, prob_mat, weight_mat)
                 acc_mat[epoch] = copy.deepcopy(init_acc_mat)
                 acc_mat_per_class[epoch] = copy.deepcopy(init_acc_mat_per_class)
-                # print(init_acc_mat)
 
             save_checkpoint(save_dir, nets, optimizers, schedulers, epoch,t_acc, v_acc, t_loss, v_loss, c_matrix, w_matrix, prob_mat, p_marginal, num_models, acc_mat, acc_mat_per_class, temp)
 
