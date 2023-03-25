@@ -6,9 +6,6 @@ import torch.nn as nn
 from torch import Tensor
 
 
-
-
-
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
     return nn.Conv2d(
@@ -129,19 +126,10 @@ class Bottleneck(nn.Module):
         out = self.bn3(out)
 
         if self.downsample is not None:
-          #print('channel mismatch')
           identity = self.downsample(x)
-        # if self.stride==2:
-        #   if self.downsample is not None: # if channels change use conv1x1
-        #     print('channel mismatch')
-        #     identity = self.downsample(x)
-        elif self.conv2.stride==(2,2): # if only spatial dim changes, downsample input
-          #print('size mismatch')
-          identity = nn.functional.conv2d(x,torch.ones((self.planes * self.expansion,1,1,1),device=torch.device('cuda')), bias=None, stride=2, groups=self.planes * self.expansion)
 
-        #     #torch.nn.functional.conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1)
-        # print('out size:', out.size())
-        # print('identity size:', identity.size())
+        elif self.conv2.stride==(2,2): # if only spatial dim changes, downsample input
+          identity = nn.functional.conv2d(x,torch.ones((self.planes * self.expansion,1,1,1),device=torch.device('cuda')), bias=None, stride=2, groups=self.planes * self.expansion)
         out += identity
         out = self.relu(out)
 
@@ -299,25 +287,4 @@ class ResNet(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
-
-
-# def _resnet(
-#     block: Type[Union[BasicBlock, Bottleneck]],
-#     layers: List[int],
-#     weights: Optional[WeightsEnum],
-#     progress: bool,
-#     **kwargs: Any,
-# ) -> ResNet:
-#     if weights is not None:
-#         _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
-
-#     model = ResNet(block, layers, **kwargs)
-
-#     if weights is not None:
-#         model.load_state_dict(weights.get_state_dict(progress=progress))
-
-#     return model
-
-# model = resnet50(pretrained=False)
-
 
