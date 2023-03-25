@@ -32,5 +32,3 @@ prepare_data('food-101/meta/test.txt', 'food-101/images', 'food-101/test')
 # Prepare test data by copying images from food-101/images to food-101/test using the file test.txt
 print("Creating test data...")
 prepare_data('food-101/meta/test.txt', 'food-101/images', 'food-101/test')
-
-
