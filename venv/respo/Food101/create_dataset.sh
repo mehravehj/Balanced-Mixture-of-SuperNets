@@ -1,1 +1,1 @@
-./write_imagenet.sh 500 0.5 90
+./write_imagenet.sh 256 0.5 90
