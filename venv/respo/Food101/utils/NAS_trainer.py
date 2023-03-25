@@ -16,7 +16,6 @@ def create_models(num_models):
     create n identical models
     """
     models = [ResNet(Bottleneck, [3, 4, 6, 3]) for _ in range(num_models)]  # create multiple models
-    # model2 = copy.deepcopy(model1) # do I make them same initialization?
     return models
 
 
@@ -195,36 +194,10 @@ def validate_all(models, num_models, paths, num_paths, validation_queue, prob_co
                     valid_acc = calculate_accuracy(validation_outputs, validation_targets)
                     valid_accuracy = copy.deepcopy(valid_acc)
                     valid_accuracy_batch += valid_accuracy
-                    # per_class += accuracy_per_class(validation_outputs, validation_targets)
-                    # print(per_class.size())
             valid_acc_epoch = valid_accuracy_batch[0] / valid_accuracy_batch[1]
             print('evaluate arch', top_arch_index ,'evaluate model', top_model_index, 'with max acc', value_top20[i], 'accuracy', valid_acc_epoch, flush=True)
-                    # valid_acc_epoch_per_class = per_class[0, :] / per_class[1, :]
             init_acc_mat[top_arch_index, top_model_index] = copy.deepcopy(valid_acc_epoch)
-                    # init_acc_mat_per_class[j, i, :] = copy.deepcopy(valid_acc_epoch_per_class)
 
-            # for j in range(num_paths):
-            #     # only if max prob
-            #     if i == torch.argmax(prob_cond[j, :]):
-            #         print('evaluate model', i, 'from prob', prob_cond[j, :], flush=True)
-            #         valid_accuracy_batch = 0
-            #         valid_accuracy_epoch = 0
-            #         per_class = 0
-            #         model.module.set_path(paths[j])
-
-                    # for batch_idx, (validation_inputs, validation_targets) in enumerate(validation_queue):
-                    #     # validation_inputs, validation_targets = validation_inputs.cuda(), validation_targets.cuda()
-                    #     with torch.cuda.amp.autocast(enabled=not fp32):
-                    #         validation_outputs = model(validation_inputs)
-                    #         valid_acc = calculate_accuracy(validation_outputs, validation_targets)
-                            # valid_accuracy = copy.deepcopy(valid_acc)
-                            # valid_accuracy_batch += valid_accuracy
-                            # per_class += accuracy_per_class(validation_outputs, validation_targets)
-                        # print(per_class.size())
-                    # valid_acc_epoch = valid_accuracy_batch[0] / valid_accuracy_batch[1]
-                    # valid_acc_epoch_per_class = per_class[0, :] / per_class[1, :]
-                    # init_acc_mat[j, i] = copy.deepcopy(valid_acc_epoch)
-                    # init_acc_mat_per_class[j, i, :] = copy.deepcopy(valid_acc_epoch_per_class)
             print('validation time: ', datetime.now() - startTime, flush=True)
 
         for i in range(50):
