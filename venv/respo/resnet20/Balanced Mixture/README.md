@@ -10,5 +10,3 @@ To train obtained architectures individually, run with the output -p as:
 ```bash
 $ python main_base.py -p 0,0,0,0,1,0,0,1,0,0
 ```
-
-NOTE: To obtain resutl related to Figure 3 and table 5
