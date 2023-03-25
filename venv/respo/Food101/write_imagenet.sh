@@ -15,3 +15,4 @@ write_dataset () {
 }
 
 write_dataset train $1 $2 $3
+write_dataset val $1 $2 $3
