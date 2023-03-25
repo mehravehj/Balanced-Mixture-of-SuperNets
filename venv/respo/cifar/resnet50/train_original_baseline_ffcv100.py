@@ -12,7 +12,6 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.optim
-# from torch.optim.lr_scheduler import StepLR
 import torch.multiprocessing as mp
 import torch.utils.data
 import torch.utils.data.distributed
@@ -126,17 +125,10 @@ def main_worker(gpu, args):
     # define loss function (criterion), optimizer, and learning rate scheduler
     criterion = nn.CrossEntropyLoss().cuda()
     # linear scale learning rate with 256 base batch size
-    #args.lr *= args.batch_size * args.ngpus / 256
     optimizer = torch.optim.SGD(model.parameters(), args.learning_rate,
                                 momentum=args.weight_momentum,
                                 weight_decay=args.weight_decay)
     
-    # various schedulers
-
-    # decay lr by 10 every 30 epochs
-    #scheduler = StepLR(optimizer, step_size=30, gamma=0.1)
-
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, args.epochs + 1, eta_min=args.min_learning_rate)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[60,120,160], gamma=0.2, last_epoch=- 1, verbose=False)
 
 
