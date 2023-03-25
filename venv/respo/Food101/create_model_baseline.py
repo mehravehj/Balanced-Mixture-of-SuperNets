@@ -6,9 +6,6 @@ import torch.nn as nn
 from torch import Tensor
 import numpy as np
 
-
-
-
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
     return nn.Conv2d(
@@ -129,19 +126,9 @@ class Bottleneck(nn.Module):
         out = self.bn3(out)
 
         if self.downsample is not None:
-          #print('channel mismatch')
           identity = self.downsample(x)
-        # if self.stride==2:
-        #   if self.downsample is not None: # if channels change use conv1x1
-        #     print('channel mismatch')
-        #     identity = self.downsample(x)
         elif self.conv2.stride==(2,2): # if only spatial dim changes, downsample input
-          #print('size mismatch')
           identity = nn.functional.conv2d(x,torch.ones((self.planes * self.expansion,1,1,1),device=torch.device('cuda')), bias=None, stride=2, groups=self.planes * self.expansion)
-
-        #     #torch.nn.functional.conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1)
-        # print('out size:', out.size())
-        # print('identity size:', identity.size())
         out += identity
         out = self.relu(out)
 
@@ -193,10 +180,6 @@ class ResNet(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
-            # elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-            #     print(m.weight)
-            #     nn.init.constant_(m.weight, 1)
-            #     nn.init.constant_(m.bias, 0)
 
         # Zero-initialize the last BN in each residual branch,
         # so that the residual branch starts with zeros, and each residual block behaves like an identity.
@@ -232,8 +215,6 @@ class ResNet(nn.Module):
             elif lay > 13:
                 l = lay - 13
                 self.layer4[l].conv2.stride = (stride, stride)
-
-
 
     def _make_layer(
         self,
@@ -328,24 +309,3 @@ def create_search_space():
         print('bug... please fix')
 
     return tuple(all_paths), number_paths
-
-# def _resnet(
-#     block: Type[Union[BasicBlock, Bottleneck]],
-#     layers: List[int],
-#     weights: Optional[WeightsEnum],
-#     progress: bool,
-#     **kwargs: Any,
-# ) -> ResNet:
-#     if weights is not None:
-#         _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
-
-#     model = ResNet(block, layers, **kwargs)
-
-#     if weights is not None:
-#         model.load_state_dict(weights.get_state_dict(progress=progress))
-
-#     return model
-
-# model = resnet50(pretrained=False)
-
-
