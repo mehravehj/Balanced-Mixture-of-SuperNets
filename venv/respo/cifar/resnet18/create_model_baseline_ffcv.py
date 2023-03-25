@@ -69,28 +69,14 @@ class ResBasicBlockPreAct(nn.Module):
         out = self.relu(out)
         out = self.conv2(out)
 
-        #
-        # out = self.conv1(x)
-        # out = self.bn1(out, track_running_stats=False, affine=False)
-        # out = self.relu(out)
-        #
-        # out = self.conv2(out)
-        # out = self.bn2(out, track_running_stats=False, affine=False)
-
         if self.downsample is not None:
             identity = self.downsample(x)
 
-        # if self.stride==2:
-        #   if self.downsample is not None: # if channels change use conv1x1
-        #     print('channel mismatch')
-        #     identity = self.downsample(x)
         elif self.conv1.stride == (2, 2):  # if only spatial dim changes, downsample input
-            # print('size mismatch')
             identity = nn.functional.conv2d(x, torch.ones((self.in_plane, 1, 1, 1), device=torch.device('cuda')),
                                             bias=None, stride=2, groups=self.in_plane)
 
         out += identity
-        # out = self.relu(out)
 
         return out
 
@@ -120,14 +106,8 @@ class ResBasicBlock(nn.Module):
 
 
         if self.downsample is not None:
-            # print('channel mismatch')
             identity = self.downsample(x)
-        # if self.stride==2:
-        #   if self.downsample is not None: # if channels change use conv1x1
-        #     print('channel mismatch')
-        #     identity = self.downsample(x)
         elif self.conv1.stride == (2, 2):  # if only spatial dim changes, downsample input
-            # print('size mismatch')
             identity = nn.functional.conv2d(x, torch.ones((self.out_plane, 1, 1, 1), device=torch.device('cuda')),
                                             bias=None, stride=2, groups=self.in_plane)
 
@@ -147,13 +127,9 @@ class ResNet18(nn.Module):
         self.num_layers = 9
         self.inplanes = channels[0]
         self.pool = None
-        #block = ResBasicBlockPreAct
         block = ResBasicBlock
         # first layer of Resnet is conv3
-        # self.convb = BasicConvBlock(3, 64, kernel_size=7, stride=2, padding=3, bias=False) # for iamgenet
         self.convb = BasicConvBlock(3, 64, kernel_size=3, stride=1, padding=1, bias=False)  # for cifar
-        # a maxpooling layer
-        # self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         listc += [self._make_layer(block, channels[i], 1) for i in range(1, 9)]  # would be 8 layers
 
         self.res = nn.ModuleList(listc)
@@ -162,15 +138,10 @@ class ResNet18(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
-            # elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-            #     print(m.weight)
-            #     nn.init.constant_(m.weight, 1)
-            #     nn.init.constant_(m.bias, 0)
 
         # Zero-initialize the last BN in each residual branch,
         # so that the residual branch starts with zeros, and each residual block behaves like an identity.
         # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
-        #if zero_init_residual:
         if 1:
             for m in self.modules():
                 if isinstance(m, ResBasicBlock) and m.bn2.weight is not None:
@@ -202,19 +173,12 @@ class ResNet18(nn.Module):
     def forward(self, x):
         out = x
         out = self.convb(out)
-        #print('0')
-        #print(out.size())
-        # out = self.maxpool(out)
         for c in range(8):
             out = self.res[c](out)
-            #print(c + 1)
-            #print(out.size())
         out = self.avgpool(out)
         out = self.avgpool(out)
         out = out.view(out.size(0), -1)
         out = self.fc(out)
-        #print(out.size())
-        #         out = out.view(out.size(0), -1)
         return out
 
     def _make_layer(self, block, planes, stride=1):
@@ -225,12 +189,8 @@ class ResNet18(nn.Module):
                 nn.BatchNorm2d(planes, affine=True, track_running_stats=True),
             )
 
-        # layers = []
-        # layers.append(block(self.inplanes, planes,3, stride, downsample))
-        # self.inplanes = planes
         layer = block(self.inplanes, planes, 3, stride, downsample)
         self.inplanes = planes
-        # return nn.Sequential(*layers)
         return layer
 
 
@@ -265,26 +225,3 @@ def create_search_space():
     print(path_blocks)
 
     return tuple(all_paths), number_paths
-
-
-# def _resnet(
-#     block: Type[Union[BasicBlock, Bottleneck]],
-#     layers: List[int],
-#     weights: Optional[WeightsEnum],
-#     progress: bool,
-#     **kwargs: Any,
-# ) -> ResNet:
-#     if weights is not None:
-#         _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
-
-#     model = ResNet(block, layers, **kwargs)
-
-#     if weights is not None:
-#         model.load_state_dict(weights.get_state_dict(progress=progress))
-
-#     return model
-
-# model = resnet50(pretrained=False)
-
-
-
