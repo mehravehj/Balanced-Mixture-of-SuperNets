@@ -1,0 +1,30 @@
+\begin{wraptable}{R}{0.5\textwidth}
+ \vspace{-0.5cm}
+    \caption{Resnet50 on Food101. We report best architectures, their accuracy after retraining for different number of Mixtures (M) of our SuperNets. Increasing M leads to an architecture with better accuracy. }
+    \begin{center}
+    \footnotesize
+    \vspace{-0.5cm}
+        \begin{tabular}{ l | c c }
+             %&&\textbf{Food101} &&& \\ %textbf{RESISC45} & \\
+            %\hline
+            Models &  Best Arch. & Accuracy   \\%&  Best Arch. & Accuracy & Avg. Accuracy  \\   
+             \hline
+             \hline
+              Default  & [3,4,6,3] & $84.00 \pm 0.10 $ \\ %& NA  \\%& [3,4,6,3] & $94.50 \pm 0.26 $ & NA  \\   
+             \hline
+              M = 1   & [6,4,5,1] & $ 84.24 \pm 0.09 $  \\ %&  $ 83.99 \pm 0.14 $ \\%& [3,8,3,2] & $94.94 \pm  0.03$  & $ 94.73 \pm 0.18 $  \\  
+             \hline
+              M = 2  & [4,5,6,1] & $84.34 \pm 0.18 $ \\ %& $ 84.00 \pm 0.19 $ \\% & [4,7,3,2] & $95.06 \pm 0.07$ & $ 94.64 \pm 0.26 $  \\   
+             \hline
+             M = 4  & [8,3,3,2] & $84.35 \pm 0.14 $ \\ %& $ 84.14 \pm 0.11 $ \\%& [4,6,5,1] & $95.02 \pm 0.22$ & $94.71 \pm 0.18$7  \\    
+             \hline
+             M = 8   & [9,4,2,1] & $84.73 \pm 0.09 $ \\ %&  $ 84.34 \pm 0.14 $ \\ %& [3,8,3,2] & $94.94 \pm 0.03$ & $94.72 \pm 0.19$  \\    
+        \end{tabular}           
+    %\vspace{2.5cm}
+    %\includegraphics[width=0.2\textwidth]{images/DARTS+GAEA2.png} \\
+    %(a) & (b) \\
+    % \end{tabular}
+    \label{food}
+    \vspace{-0.6cm}
+    \end{center}
+\end{wraptable}
