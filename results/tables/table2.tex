@@ -1,0 +1,34 @@
+\begin{table*}[!]
+\caption{Accuracy comparison between default, different methods that find optimal feature map scale and our method on CIFAR10 and CIFAR100 for ResNet18 and ResNet50. }
+    \vspace{-0.6cm}
+    \footnotesize
+    \begin{center}
+        \begin{tabular}{ l c c c c c}
+        
+        Method & Dataset &  Backbone & Baseline & Improved & Gap\\ %& Tr. Time \\ 
+         \hline   
+         \hline
+          %DARTS\citep{liu2018darts}- different filters  & - & -  & - \\  
+         %\hline
+         %Default \citep{he2016deep} & CIFAR10 & ResNet18 & $91.4 \pm 0.2$   \\% & ~3  \\ 
+         DiffStride \citep{riad2022learning} & CIFAR10 & ResNet18 & $91.4 \pm 0.2$ & $ 92.4 \pm 0.1$ & 1.0 \\% & ~3  \\ 
+         Balanced Mixtures (Ours) & CIFAR10 &  
+         ResNet18 & $90.45 \pm 0.21 $ & $91.51 \pm 0.09$ & 1.06  \\
+         \hline
+         %  %Default \citep{he2016deep} & CIFAR100 & ResNet18 & $66.8 \pm 0.2$  \\% & ~3  \\ 
+         % DiffStride \citep{riad2022learning} & CIFAR100 & ResNet18 & $66.8 \pm 0.2$ & $73.5 \pm 0.3$ & 6.7 \\% & ~3  \\ 
+         % Balanced Mixtures (Ours) & CIFAR100 & ResNet18 & $ 66.43 \pm 0.15 $ & $ 70.31$ & $3.88$ \\
+         %\hline
+          %GDAS \citep{dong2019searching} & - & -  & -  \\
+            % \hline
+        %Default\citep{he2016deep} & CIFAR100  & ResNet50 & 78.50  \\%& \~3 \\  
+        DynOPool\citep{jang2022pooling} & CIFAR100  & ResNet50 & 78.50 & 80.60 & 2.1\\
+        ShapeAdaptor\citep{liu2020shape} & CIFAR100  & ResNet50 & 78.50 & 80.29 & 1.8\\
+        Balanced Mixtures (Ours) & CIFAR100  & ResNet50 & $ 77.57 \pm 0.18$  & $79.61 \pm 0.21 $  & 2.04  \\%& ~1 \\
+         %\hline
+        \end{tabular}
+    
+    \end{center}
+\label{resolution-methods}
+\vspace{-.8cm}
+\end{table*}
