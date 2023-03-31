@@ -6,4 +6,4 @@ This direcory contains:
 *  Satnd-alone or individaul training: run following command with the path number as an argument:
  ``` python train_original_baseline_ffcv100.py -pn 360 ``` 
 
-Use -e tp set number of epochs.
+Use -e to set number of epochs.
