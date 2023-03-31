@@ -30,7 +30,7 @@ This direcory contains:
 
 * Balanced Mixture Method (our method): run the following with nm argument for different number of models. ```python train_initial_mm.sh -nm 4``` 
 
-Balanced Mixture Method will output architecture number and their evaluation accuarcy at the end of training, an example of an output file is ```output_mm_62686939.txt``` . To study the structure of each architecture, consult ``` rn50_lookup_space.csv  ```
+  Balanced Mixture Method will output architecture number and their evaluation accuarcy at the end of training, an example of an output file is ```output_mm_62686939.txt``` . To study the structure of each architecture, consult ``` rn50_lookup_space.csv  ```
 
 *  Satnd-alone or individaul training: run following command with the path number (pn) as an argument:
 ``` python train_original_baseline.py -pn 360 ``` 
