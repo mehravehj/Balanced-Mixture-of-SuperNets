@@ -4,19 +4,26 @@ This folder containscode for Balanced Mixture of Supernets with resnet50 backbon
 This dataset consists of 101 food categories, with total of 101,000 images with split. For each class 750/250 training and test data are provided. In our experiments, all images were rescaled to have a maximum side length of 256 pixels when converting to FFCV data files. The detailed information can be found this website https://www.vision.ee.ethz.ch/datasets_extra/food-101/
 
 ## Pre-processing Data
-To convert image folder dataset to FFCV format run:
+* To convert image folder dataset to FFCV format run:
 
 ```bash
 $ create_dataset.py
 ```
-This will create two ffcv files: ```train_256_1.0_90.ffcv```  and ```train_256_1.0_90.ffcv```  .
-For our NAS method, split training set to 50/50 subsets per class before conversion by running: 
+This will create two ffcv files: ```train_256_1.0_90.ffcv```  and ```val_256_1.0_90.ffcv```  . These files are used in training individaul architectures.
+
+* For our NAS method, split training set to 50/50 subsets per class before conversion by running: 
 
 ```bash
 $ python split_dataset.py
 ```
 
-This will create two folders `train_50/` and `val_50/` that can be converted to FFCV files.
+This will create two folders `train_50/` and `val_50/`. To convert them to FFCV format, reanme folders to `train/` and `val/` and run again:
+
+```bash
+$ create_dataset.py
+```
+
+The resulting files should be renamed to ```train_50_256_1.0_90.ffcv```  and ```val_50_256_1.0_90.ffcv``` to avoid confusion with original train/val split.
 
 ## Experiments
 This direcory contains:
