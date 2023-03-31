@@ -8,3 +8,6 @@ This direcory contains:
 
 *  Satnd-alone or individaul training: run following command with the path number (-pn) as an argument, example:
   ``` python train_original_baseline_ffcv.py -pn 360 ``` 
+  
+  
+ Use -e to set number of epochs fro training.
