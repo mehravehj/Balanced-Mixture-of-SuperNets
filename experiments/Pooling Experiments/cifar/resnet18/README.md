@@ -2,7 +2,7 @@ This folder contains code for Balanced Mixture of Supernets with resnet18 backbo
 
 This direcory contains:
 
-* Balanced Mixture Method (our method): run the following with -nm argument for different number of models, e.g. ```train_balanced_example.sh -nm 4```  for 4 models.
+* Balanced Mixture Method (our method): run the following with -nm argument for different number of models, e.g. ```python main.py -nm 4```  for 4 models.
 
   To study the structure of each architecture, consult ``` rn18_lookup_space.csv  ```
 
