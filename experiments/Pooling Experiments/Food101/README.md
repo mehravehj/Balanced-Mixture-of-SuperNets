@@ -6,24 +6,24 @@ This dataset consists of 101 food categories, with total of 101,000 images with 
 ## Pre-processing Data
 * To convert image folder dataset to FFCV format run:
 
-```bash
-$ create_dataset.py
-```
-This will create two ffcv files: ```train_256_1.0_90.ffcv```  and ```val_256_1.0_90.ffcv```  . These files are used in training individaul architectures.
+  ```bash
+  $ create_dataset.py
+  ```
+  This will create two ffcv files: ```train_256_1.0_90.ffcv```  and ```val_256_1.0_90.ffcv```  . These files are used in training individaul architectures.
 
 * For our NAS method, split training set to 50/50 subsets per class before conversion by running: 
 
-```bash
-$ python split_dataset.py
-```
+  ```bash
+  $ python split_dataset.py
+  ```
 
-This will create two folders `train_50/` and `val_50/`. To convert them to FFCV format, rename folders to `train/` and `val/` and run again:
+  This will create two folders `train_50/` and `val_50/`. To convert them to FFCV format, rename folders to `train/` and `val/` and run again:
 
-```bash
-$ create_dataset.py
-```
+  ```bash
+  $ create_dataset.py
+  ```
 
-The resulting files should be renamed to ```train_50_256_1.0_90.ffcv```  and ```val_50_256_1.0_90.ffcv``` to avoid confusion with original train/val split.
+  The resulting files should be renamed to ```train_50_256_1.0_90.ffcv```  and ```val_50_256_1.0_90.ffcv``` to avoid confusion with original train/val split.
 
 ## Experiments
 This direcory contains:
