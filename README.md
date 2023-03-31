@@ -5,6 +5,7 @@ This repository contains the release of PyTorch code to replicate all main resul
 The repository structure is as follows:
   * `requirements.txt`, contains all required libraries
   * `figures/`, contains all figures represented in the paper 
+  
 `experiments/Pooling Experiments/` contains: 
   * `resnet20/`, contains code for CIFAR10 experiments with Resnet20 backbone architecture 
   * `cifar/`, contains code for CIFAR10/CIFAR100 experiments with Resnet18/Resnet50 backbone architectures
