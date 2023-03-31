@@ -5,8 +5,8 @@ This repository contains the release of PyTorch code to replicate all main resul
 The repository structure is as follows:
   * `requirements.txt`, contains all required libraries
   * `figures/`, contains all figures represented in the paper 
-  * `resnet20/`, contains code for CIFAR10 experiments on Resnet20 backbone architecture 
-  * `cifar/`, contains code for CIFAR10/CIFAR50 experiments on Resnet18/Resnet50 backbone architectures
+  * `resnet20/`, contains code for CIFAR10 experiments with Resnet20 backbone architecture 
+  * `cifar/`, contains code for CIFAR10/CIFAR100 experiments with Resnet18/Resnet50 backbone architectures
   * `food101/`, contains code for food101 experiments on Resnet50 backbone architecture 
   
 
@@ -39,13 +39,13 @@ For our NAS method, split training set to 50/50 subsets per class before convers
 $ python split_dataset.py
 ```
 
-This will create two folders `train_50/` and `val_50/` that can be converted to FFCV files.
+This will create two folders `train_50/` and `val_50/` that can be converted to FFCV files using create_dataset.py .
 
 
 ### Experiments
 Experiment contains code to run Balanced Mixture of models as ```main.py``` and an individual training for retraining architectures. See Readme file on each expermints for more details.
 
-NOTE: The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However the bash files are edited to be ran locally.
+NOTE: The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However, the files are edited to be ran locally.
 
 
 
