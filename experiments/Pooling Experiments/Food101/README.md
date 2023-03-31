@@ -36,3 +36,6 @@ This direcory contains:
 ``` python train_original_baseline.py -pn 360 ``` 
 
 
+Use -e to set number of epochs for training.
+
+
