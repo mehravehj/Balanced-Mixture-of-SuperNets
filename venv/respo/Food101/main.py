@@ -22,7 +22,7 @@ from utils.utility_functions import string_to_list
 from create_model import ResNet, BasicBlock, Bottleneck
 
 parser = argparse.ArgumentParser(description='PyTorch Resnet multi model NAS Training')
-parser.add_argument('--dataset', '-d', default='CIFAR10', type=str, help='dataset name')
+parser.add_argument('--dataset', '-d', default='FOOD101', type=str, help='dataset name')
 parser.add_argument('--batch_size', '-b', type=int, default=256, help='batch size')
 parser.add_argument('--test_name', '-tn', type=int, default=1, help='test name for saving model')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
