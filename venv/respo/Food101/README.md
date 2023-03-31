@@ -9,7 +9,7 @@ To convert image folder dataset to FFCV format run:
 ```bash
 $ create_dataset.py
 ```
-
+This will create two ffcv files: ```train_256_1.0_90.ffcv```  and ```train_256_1.0_90.ffcv```  .
 For our NAS method, split training set to 50/50 subsets per class before conversion by running: 
 
 ```bash
