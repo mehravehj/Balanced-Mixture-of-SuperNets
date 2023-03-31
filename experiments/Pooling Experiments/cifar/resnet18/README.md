@@ -10,4 +10,4 @@ This direcory contains:
   ``` python train_original_baseline_ffcv.py -pn 360 ``` 
   
   
- Use -e to set number of epochs fro training.
+ Use -e to set number of epochs to train.
