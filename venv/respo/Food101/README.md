@@ -17,7 +17,7 @@ This will create two ffcv files: ```train_256_1.0_90.ffcv```  and ```val_256_1.0
 $ python split_dataset.py
 ```
 
-This will create two folders `train_50/` and `val_50/`. To convert them to FFCV format, reanme folders to `train/` and `val/` and run again:
+This will create two folders `train_50/` and `val_50/`. To convert them to FFCV format, rename folders to `train/` and `val/` and run again:
 
 ```bash
 $ create_dataset.py
