@@ -11,6 +11,8 @@ The repository structure is as follows:
   * `cifar/`, contains code for CIFAR10/CIFAR100 experiments with Resnet18/Resnet50 backbone architectures
   * `food101/`, contains code for food101 experiments on Resnet50 backbone architecture 
   
+Each folder contains a ReadMe file for more information.
+  
 
 ## Getting Started
 ### Install
@@ -29,10 +31,10 @@ To split CIFAR datsets before conversion, run:
    ```bash
    $ ./write_cifar_50.sh
    ```
-   * For Food101 tests the datset should be downloaded from [here](https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/) and placed in food101 folder. To convert image folder dataset to FFCV format run:
+   * For Food101 tests the dataset should be downloaded from [here](https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/) and placed in food101 folder. To convert image folder dataset to FFCV format run:
 
 ```bash
-$ create_dataset1.py
+$ create_dataset.py
 ```
 
 For our NAS method, split training set to 50/50 subsets per class before conversion by running: 
