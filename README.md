@@ -16,8 +16,24 @@ Each folder contains a ReadMe file for more information.
 
 ## Getting Started
 ### Install
-It's recommended to use Python3 and create a virtual environment first. Then install libraries from `requirements.txt`.
+It's recommended to use Python3.9 and create a virtual environment first:
+`>>> torch.__version__
+'1.13.1+cu117'
+`
+to install please use one of the two ways:
 
+   ```bash
+   $ pip install -r requirements.txt
+   ```
+Or:
+   ```bash
+$ conda create -n ffcv2 python==3.9
+$ conda activate ffcv2
+$ pip install -r requirements.txt
+   ```
+   
+Please note that FFCV library is not required for running experiments in resnet20 folder and only necessary for food101 and cifar folder. Please note that FFCV might have problems for installation in older cuda versions. 
+ 
 ### Dataset Preperation
 Please note that for experiments in  `cifar/` and `food101/` , datasets need to be converted to [FFCV](https://ffcv.io/) format. For experimetns with resnet20 this is not required. Furthermore, for NAS methods presented in this paper, training datasets are split 50/50:
 
@@ -49,7 +65,45 @@ This will create two folders `train_50/` and `val_50/` that can be converted to 
 ### Experiments
 Experiment contains code to run Balanced Mixture of models as ```main.py``` and an individual training for retraining architectures. See Readme file on each expermints for more details.
 
-NOTE: The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However, the files are edited to be ran locally.
+# Training Time and Hyperparameter Search
+
+
+For Resnet20 experiments reported in table 1:
+
+| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
+| :---:   | :---: | :---: |
+| DARTS (all cases) | 9.5   |  15  |
+| SPOS (all cases)  | 3   | 15   |
+| Balanced Mixtures (Ours)  | 9.5   | 15   |
+
+For Resnet20 experiments reported in table 2:
+
+| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
+| :---:   | :---: | :---: |
+| DARTS/DARTS+GAEA  | 9.5   |  15  |
+| SPOS/MCT UCB/MCT + Uniform/SBE  | 3   | 15   |
+| Default | 1.5   | 15   |
+| Balanced Mixtures (Ours)  | 9.5   | 15   
+| Bruteforce | 108   | 500   |
+
+For cifar experiments reported in table 3:
+
+| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
+| :---:   | :---: | :---: |
+| CIFAR10, Resnet18  | 12.5   |  20  |
+| CIFAR100, Resnet50  | 18   | 30   |
+
+For Food101 experiments reported in table 4:
+
+| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
+| :---:   | :---: | :---: |
+| Defalut  | 5   |  20  |
+| M=1  | 8   | 30   |
+| M=2  | 16   | 30   |
+| M=3  | 32   | 30   |
+| M=4  | 64   | 30   |
+
+NOTE: For hyperparameter search, we performed a grid search for few iterations. The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However, the files are edited to be ran locally.
 
 
 
