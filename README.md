@@ -72,19 +72,19 @@ For Resnet20 experiments reported in table 1:
 
 | Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
 | :---:   | :---: | :---: |
-| DARTS (all cases) | 9.5   |  15  |
-| SPOS (all cases)  | 3   | 15   |
-| Balanced Mixtures (Ours)  | 9.5   | 15   |
+| DARTS (all cases) | 12   |  15  |
+| SPOS (all cases)  | 2.5   | 15   |
+| Balanced Mixtures (Ours)  | 6   | 15   |
 
 For Resnet20 experiments reported in table 2:
 
 | Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
 | :---:   | :---: | :---: |
-| DARTS/DARTS+GAEA  | 9.5   |  15  |
-| SPOS/MCT UCB/MCT + Uniform/SBE  | 3   | 15   |
+| DARTS/DARTS+GAEA  | 12   |  15  |
+| SPOS/MCT UCB/MCT + Uniform/SBE  | 2.5   | 15   |
 | Default | 1.5   | 15   |
-| Balanced Mixtures (Ours)  | 9.5   | 15   
-| Bruteforce | 108   | 500   |
+| Balanced Mixtures (Ours)  | 6   | 15   
+| Bruteforce | 98   | 500   |
 
 For cifar experiments reported in table 3:
 
@@ -97,11 +97,11 @@ For Food101 experiments reported in table 4:
 
 | Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
 | :---:   | :---: | :---: |
-| Defalut  | 2   |  20  |
-| M=1  | 3   | 30   |
-| M=2  | 5   | 30   |
-| M=4  | 8.5   | 30   |
-| M=8  | 16   | 30   |
+| Defalut  | 2  |  20  |
+| M=1  | 2.5   | 30   |
+| M=2  | 4   | 30   |
+| M=4  | 7.5   | 30   |
+| M=8  | 15   | 30   |
 
 NOTE: For hyperparameter search, we performed a grid search for few iterations. The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However, the files are edited to be ran locally.
 
