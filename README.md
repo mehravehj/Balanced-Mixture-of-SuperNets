@@ -97,11 +97,11 @@ For Food101 experiments reported in table 4:
 
 | Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
 | :---:   | :---: | :---: |
-| Defalut  | 5   |  20  |
-| M=1  | 8   | 30   |
-| M=2  | 16   | 30   |
-| M=3  | 32   | 30   |
-| M=4  | 64   | 30   |
+| Defalut  | 2   |  20  |
+| M=1  | 3   | 30   |
+| M=2  | 5   | 30   |
+| M=4  | 8.5   | 30   |
+| M=8  | 16   | 30   |
 
 NOTE: For hyperparameter search, we performed a grid search for few iterations. The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However, the files are edited to be ran locally.
 
