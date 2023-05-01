@@ -8,7 +8,6 @@ cycler==0.11.0
 docopt==0.6.2  
 fastargs==1.2.0  
 fastrlock==0.8  
-ffcv==0.0.3  
 fonttools==4.38.0  
 idna==3.4  
 imgcat==0.5.0  
@@ -45,3 +44,4 @@ typing_extensions==4.4.0
 urllib3==1.26.13  
 webdataset==0.2.31
 yarg==0.1.9
+ffcv==0.0.3 
