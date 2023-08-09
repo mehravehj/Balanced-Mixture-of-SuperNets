@@ -1,4 +1,4 @@
-# Balanced Mixture of Supernets for Learning CNN Pooling
+# Balanced Mixture of Supernets for Learning CNN Pooling Architecture
 
 This repository contains the release of PyTorch code to replicate all main results, figures and tabels presented in the paper: Balanced Mixture of Supernets for Learning the CNN Pooling Architecture
 
