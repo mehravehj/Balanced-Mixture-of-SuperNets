@@ -79,7 +79,7 @@ For Resnet20 experiments reported in table 1:
 For Resnet20 experiments reported in table 2:
 
 | Experiment | Approximate GPU hours    | 
-| :---:   | :---: | :---: |
+| :---:   | :---: |
 | DARTS/DARTS+GAEA  | 12   | 
 | SPOS/MCT UCB/MCT + Uniform/SBE  | 2.5   |
 | Default | 1.5   | 
