@@ -70,40 +70,40 @@ Experiment contains code to run Balanced Mixture of models as ```main.py``` and 
 
 For Resnet20 experiments reported in table 1:
 
-| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
-| :---:   | :---: | :---: |
-| DARTS (all cases) | 12   |  15  |
-| SPOS (all cases)  | 2.5   | 15   |
-| Balanced Mixtures (Ours)  | 6   | 15   |
+| Experiment | Approximate GPU hours    | 
+| :---:   | :---: | 
+| DARTS (all cases) | 12   |  
+| SPOS (all cases)  | 2.5   | 
+| Balanced Mixtures (Ours)  | 6   | 
 
 For Resnet20 experiments reported in table 2:
 
-| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
+| Experiment | Approximate GPU hours    | 
 | :---:   | :---: | :---: |
-| DARTS/DARTS+GAEA  | 12   |  15  |
-| SPOS/MCT UCB/MCT + Uniform/SBE  | 2.5   | 15   |
-| Default | 1.5   | 15   |
-| Balanced Mixtures (Ours)  | 6   | 15   
-| Bruteforce | 98   | 500   |
+| DARTS/DARTS+GAEA  | 12   | 
+| SPOS/MCT UCB/MCT + Uniform/SBE  | 2.5   |
+| Default | 1.5   | 
+| Balanced Mixtures (Ours)  | 6   |  
+| Bruteforce | 98   |
 
 For cifar experiments reported in table 3:
 
-| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
-| :---:   | :---: | :---: |
-| CIFAR10, Resnet18  | 12.5   |  20  |
-| CIFAR100, Resnet50  | 18   | 30   |
+| Experiment | Approximate GPU hours    | 
+| :---:   | :---: | 
+| CIFAR10, Resnet18  | 12.5   | 
+| CIFAR100, Resnet50  | 18   |
 
 For Food101 experiments reported in table 4:
 
-| Experiment | Approximate GPU hours    | Approximate Hyperparameter Search (min)    |
-| :---:   | :---: | :---: |
-| Defalut  | 2  |  20  |
-| M=1  | 2.5   | 30   |
-| M=2  | 4   | 30   |
-| M=4  | 7.5   | 30   |
-| M=8  | 15   | 30   |
+| Experiment | Approximate GPU hours    | 
+| :---:   | :---: | 
+| Defalut  | 2  | 
+| M=1  | 2.5   |
+| M=2  | 4   | 
+| M=4  | 7.5   | 
+| M=8  | 15   | 
 
-NOTE: For hyperparameter search, we performed a grid search for few iterations. The code was originally ran on a cluster with 1 GPU NVIDIA V100 Volta (32G HBM2 memory). However, the files are edited to be ran locally.
+NOTE: For hyperparameter search, we performed a grid search for few iterations. The code was originally ran on a cluster. However, the files are edited to be ran locally.
 
 
 
