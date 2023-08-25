@@ -6,7 +6,7 @@ This direcory contains:
 
   To study the structure of each architecture, consult ``` rn18_lookup_space.csv  ```
 
-*  Satnd-alone or individaul training: run following command with the path number (-pn) as an argument, example:
+*  Stand-alone or individaul training: run following command with the path number (-pn) as an argument, example:
   ``` python train_original_baseline_ffcv.py -pn 360 ``` 
   
   
