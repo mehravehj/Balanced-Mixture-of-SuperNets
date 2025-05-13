@@ -65,45 +65,6 @@ This will create two folders `train_50/` and `val_50/` that can be converted to 
 ### Experiments
 Experiment contains code to run Balanced Mixture of models as ```main.py``` and an individual training for retraining architectures. See Readme file on each expermints for more details.
 
-# Training Time and Hyperparameter Search
-
-
-For Resnet20 experiments reported in table 1:
-
-| Experiment | Approximate GPU hours    | 
-| :---:   | :---: | 
-| DARTS (all cases) | 12   |  
-| SPOS (all cases)  | 2.5   | 
-| Balanced Mixtures (Ours)  | 6   | 
-
-For Resnet20 experiments reported in table 2:
-
-| Experiment | Approximate GPU hours    | 
-| :---:   | :---: |
-| DARTS/DARTS+GAEA  | 12   | 
-| SPOS/MCT UCB/MCT + Uniform/SBE  | 2.5   |
-| Default | 1.5   | 
-| Balanced Mixtures (Ours)  | 6   |  
-| Bruteforce | 98   |
-
-For cifar experiments reported in table 3:
-
-| Experiment | Approximate GPU hours    | 
-| :---:   | :---: | 
-| CIFAR10, Resnet18  | 12.5   | 
-| CIFAR100, Resnet50  | 18   |
-
-For Food101 experiments reported in table 4:
-
-| Experiment | Approximate GPU hours    | 
-| :---:   | :---: | 
-| Defalut  | 2  | 
-| M=1  | 2.5   |
-| M=2  | 4   | 
-| M=4  | 7.5   | 
-| M=8  | 15   | 
-
-NOTE: For hyperparameter search, we performed a grid search for few iterations. The code was originally ran on a cluster. However, the files are edited to be ran locally.
 
 
 
